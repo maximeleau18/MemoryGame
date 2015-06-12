@@ -1,0 +1,34 @@
+{% block stylesheets %}
+    
+{% endblock %}
+
+{% block content %}
+    <h1>Connexion</h1>
+    <form action="{{ path('mg_memory_game_connexion') }}" method="post">
+        <table id="connexion_form">
+            <tfoot>
+                <tr>
+                    <td colspan="2">
+                        <input type="submit" value="Connexion" />
+                    </td>
+                </tr>
+            </tfoot>
+            <tbody>
+                <tr>
+                    <th>{{ form_label() }}</th>
+                    <td>
+                        {{ form_errors() }}
+                        {{ form_widget() }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>{{ form_label() }}</th>
+                    <td>
+                        {{ form_errors() }}
+                        {{ form_widget() }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    {{ form_end(form) }}
+{% endblock %}
