@@ -12,6 +12,7 @@
 namespace MG\MemoryGameBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
@@ -23,28 +24,50 @@ class HumanPlayer extends Player
 {
 	/**
 	 * HumanPlayer Login
-	 * @ORM\Column(type="string", length=255)
+	 * @ORM\Column(type="string", length=255, nullable=false, unique=true)
+	 * @Assert\NotBlank(
+	 * 		message = "Vous devez renseigner un login"
+	 * )
+	 * @Assert\Length(
+     *      min = "3",
+     *      max = "255",
+     *      minMessage = "Votre login doit faire au moins {{ limit }} caractères",
+     *      maxMessage = "Votre login ne peut pas être plus long que {{ limit }} caractères"
+     * )
 	 * @var string
 	 */
 	protected $login;
 	
 	/**
 	 * HumanPlayer Password
-	 * @ORM\Column(type="string", length=255)
-	 * @var string
+	 * @ORM\Column(type="string", length=255, nullable=false)
+	 * @Assert\NotBlank(
+	 * 		message = "Vous devez renseigner un mot de passe"
+	 * )
+	 * @Assert\Length(
+     *      min = "15",
+     *      max = "255",
+     *      minMessage = "Votre mot de passe doit faire au moins {{ limit }} caractères",
+     *      maxMessage = "Votre mot de passe ne peut pas être plus long que {{ limit }} caractères"
+     * )
+     *  @var string
 	 */
 	protected $password;
 	
 	/**
 	 * HumanPlayer Birthdate
-	 * @ORM\Column(name="birthdate", type="datetime")
+	 * @Assert\NotBlank(
+	 * 		message = "Vous devez renseigner une date de naissance"
+	 * )
+	 * @ORM\Column(name="birthdate", type="datetime", nullable=false)
 	 * @var \DateTime
 	 */
 	protected $birthDate;
 	
 	/**
 	 * HumanPlayer Created date
-	 * @ORM\Column(name="created_at", type="datetime")
+	 * @ORM\Column(name="created_at", type="datetime", nullable=false)
+	 * @Assert\NotBlank()
 	 * @var \DateTime
 	 */
 	protected $createdAt;
@@ -80,7 +103,7 @@ class HumanPlayer extends Player
 	 */
 	public function setPassword($password)
 	{
-		$this->login = $password;
+		$this->password = $password;
 	
 		return $this;
 	}
@@ -141,4 +164,19 @@ class HumanPlayer extends Player
 		return $this->createdAt;
 	}
 	
+    /**
+     * @var integer
+     */
+    protected $id;
+
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 }

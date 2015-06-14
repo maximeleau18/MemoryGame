@@ -18,7 +18,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * Player entity
  * @ORM\Table(name="player")
  * @ORM\Entity(repositoryClass="MG\MemoryGameBundle\Repository\PlayerRepository")
- * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap( {"player" = "Player", "computerPlayer" = "ComputerPlayer", "humanPlayer" = "HumanPlayer"} )
  */
@@ -44,5 +44,4 @@ class Player
     {
         return $this->id;
     }
-    
 }

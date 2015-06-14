@@ -16,7 +16,10 @@ class AppKernel extends Kernel
             new Symfony\Bundle\AsseticBundle\AsseticBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
-            new AppBundle\AppBundle(),
+        		
+        	new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
+        		
+            //new AppBundle\AppBundle(),
             new MG\MemoryGameBundle\MGMemoryGameBundle(),
         );
 

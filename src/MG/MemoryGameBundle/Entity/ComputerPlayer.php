@@ -25,7 +25,7 @@ class ComputerPlayer extends Player
     /**
      * @var integer
      */
-    private $id;
+    protected $id;
 
 
     /**
