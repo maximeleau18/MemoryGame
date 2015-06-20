@@ -21,6 +21,9 @@ class AppKernel extends Kernel
         		
             //new AppBundle\AppBundle(),
             new MG\MemoryGameBundle\MGMemoryGameBundle(),
+        		
+        	// Bundle to expose routes in JS Files
+        	new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

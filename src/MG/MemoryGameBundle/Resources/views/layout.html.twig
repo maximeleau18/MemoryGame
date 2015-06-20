@@ -17,18 +17,30 @@
 		<script type="text/javascript" src="{{ asset('bundles/mgmemorygame/js/jquery.fancybox-thumbs.js?v=1.0.7') }}"></script>
 		<script type="text/javascript" src="{{ asset('bundles/mgmemorygame/js/jquery.fancybox-media.js?v=1.0.6') }}"></script>
 		<script type="text/javascript" src="{{ asset('bundles/mgmemorygame/js/displayConnection.js') }}"></script>
+		<script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+		<script src="{{ path('fos_js_routing_js', {'callback': 'fos.Router.setData'}) }}"></script>
 	{% endblock %}
 </head>
 <body>
 	<header>
-		<div><a id="connectionDiv" data-fancybox-type="iframe" href="{{ path('mg_memory_game_connexion') }}">
-			TEST HEADER
-			</a></div>
+	{% if app.user is not null %}
+		Bonjour {{ app.user.username }} 
+		<form method="post" action="{{ path('logout') }}">
+	    	<button type="submit">Se déconnecter</button>
+		</form>
+	{% else %}
+		<div>
+			<a id="connectionDiv" data-fancybox-type="iframe" href="{{ path('login') }}">
+				TEST HEADER
+			</a>
+		</div>
+	{% endif %}
 	<header>
 	{%  block content %}
 	{% endblock %}
 	<footer>
 		<div>About FOOTER</div>
 	</footer>
+	
 </body>
 </html>

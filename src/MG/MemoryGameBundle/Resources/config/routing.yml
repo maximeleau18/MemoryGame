@@ -1,8 +1,14 @@
 mg_memory_game_homepage:
     path:     /
     defaults: { _controller: "MGMemoryGameBundle:Default:index" }
+    options:
+        expose: true
     
-# The route to launch connexion user form or register user form        
-mg_memory_game_connexion:
-    pattern: /connexion
-    defaults: { _controller: "MGMemoryGameBundle:UserConnexion:index" }
+# The route to launch connexion user form      
+login:
+    pattern:   /login
+    defaults:  { _controller: "MGMemoryGameBundle:UserConnexion:login" }
+login_check:
+    pattern:   /login_check
+logout:
+    pattern:   /logout

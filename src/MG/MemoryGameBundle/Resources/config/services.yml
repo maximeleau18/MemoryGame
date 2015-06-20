@@ -1,4 +1,9 @@
-services:
+#services:
 #    mg_memory_game.example:
 #        class: MG\MemoryGameBundle\Example
 #        arguments: [@service_id, "plain_value", %parameter%]
+services:
+    authentication_handler:
+        class:  MG\MemoryGameBundle\Handler\AuthenticationHandler
+        tags:
+            - { name: 'monolog.logger', channel: 'security' }

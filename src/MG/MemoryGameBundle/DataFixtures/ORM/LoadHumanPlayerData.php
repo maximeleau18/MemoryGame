@@ -18,10 +18,24 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MG\MemoryGameBundle\Entity\HumanPlayer;
 
-class LoadHumanPlayerData extends AbstractFixture implements OrderedFixtureInterface
+class LoadHumanPlayerData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
 
 	protected $manager;
+	
+	/**
+	 * @var ContainerInterface
+	 */
+	private $container;
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public function setContainer(ContainerInterface $container = null)
+	{
+		$this->container = $container;
+	}
+	
 	
     /**
      * (non-PHPdoc)
@@ -51,11 +65,14 @@ class LoadHumanPlayerData extends AbstractFixture implements OrderedFixtureInter
    * 
    * @return \MG\MemoryGameBundle\Entity\ComputerPlayer
    */
-    protected function makeHumanPlayer($login, $password, $birthDate)
+    protected function makeHumanPlayer($username, $password, $birthDate)
     {
         $humanPlayer = New HumanPlayer();
-        $humanPlayer->setLogin($login);
-        $humanPlayer->setPassword($password);
+        $factory = $this->container->get('security.encoder_factory');        
+        $encoder = $factory->getEncoder($humanPlayer);
+        $passwordEncoded = $encoder->encodePassword($password, $humanPlayer->getSalt());
+        $humanPlayer->setPassword($passwordEncoded);
+        $humanPlayer->setUsername($username);
         $humanPlayer->setBirthDate($birthDate);
         $humanPlayer->setCreatedAt(New \DateTime());        
 

@@ -1,12 +1,51 @@
 security:
+    encoders:
+        MG\MemoryGameBundle\Entity\HumanPlayer: sha512
+    role_hierarchy:
+        ROLE_ADMIN:       ROLE_USER
+        ROLE_SUPER_ADMIN: [ ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH ]
     providers:
-        in_memory:
-            memory: ~
+        administrators:
+            entity: { class: "MGMemoryGameBundle:HumanPlayer" }
 
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt|error)|css|images|js)/
             security: false
+            
+        secured_area:
+            pattern:    ^/
+            anonymous: ~
+            form_login:
+                # l'utilisateur est redirigé ici quand il/elle a besoin de se connecter
+                login_path:                     /login
+                use_forward:                    false
+                # soumet le formulaire de login vers cette URL
+                check_path:                     /login_check      
+                # Comportement en cas de réussite ou d'echec          
+                success_handler:                authentication_handler
+                failure_handler:                authentication_handler
 
+                # par défaut, le formulaire de login *doit* être un POST,
+                # et pas un GET
+                post_only:                      true
+
+                # options de redirection lorsque le login a réussi (vous
+                # pouvez en lire plus ci-dessous)
+                always_use_default_target_path: false
+                default_target_path:            /
+                target_path_parameter:          _target_path
+                use_referer:                    false
+
+                # options de redirection lorsque le login échoue (vous
+                # pouvez en lire plus ci-dessous)
+                failure_path:                   null
+                failure_forward:                false
+
+                # noms des champs pour le nom d'utilisateur et le mot
+                # de passe
+                username_parameter:             _login
+                password_parameter:             _password
+            logout: ~
         default:
             anonymous: ~

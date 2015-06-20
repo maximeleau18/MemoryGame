@@ -1,7 +1,6 @@
 mg_memory_game:
     resource: "@MGMemoryGameBundle/Resources/config/routing.yml"
     prefix:   /
-
-app:
-    resource: "@AppBundle/Controller/"
-    type:     annotation
+# FOS Js to use routing in JS files
+fos_js_routing:
+     resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"

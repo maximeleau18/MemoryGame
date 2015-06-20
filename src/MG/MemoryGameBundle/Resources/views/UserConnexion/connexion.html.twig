@@ -1,34 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	{% block title %}    	
+	{% endblock %}
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	
 {% block stylesheets %}
-    
-{% endblock %}
+		<link rel="stylesheet" href="{{ asset('bundles/mgmemorygame/css/main.css') }}" type="text/css" />
+		<link rel="stylesheet" type="text/css" href="{{ asset('bundles/mgmemorygame/css/jquery.fancybox.css?v=2.1.5') }}" type="text/css"/>
+		<link rel="stylesheet" type="text/css" href="{{ asset('bundles/mgmemorygame/css/jquery.fancybox-thumbs.css?v=1.0.7') }}" type="text/css"/>
+		<link rel="stylesheet" type="text/css" href="{{ asset('bundles/mgmemorygame/css/jquery.fancybox-buttons.css?v=1.0.5') }}" type="text/css"/>
+	{% endblock %}
+	{% block javascripts %}
+		<script type="text/javascript" src="{{ asset('bundles/mgmemorygame/js/jquery-1.11.2.js') }}"></script>
+		<script type="text/javascript" src="{{ asset('bundles/mgmemorygame/js/jquery.fancybox.js?v=2.1.5') }}"></script>
+		<script type="text/javascript" src="{{ asset('bundles/mgmemorygame/js/jquery.fancybox-buttons.js?v=1.0.5') }}"></script>
+		<script type="text/javascript" src="{{ asset('bundles/mgmemorygame/js/jquery.fancybox-thumbs.js?v=1.0.7') }}"></script>
+		<script type="text/javascript" src="{{ asset('bundles/mgmemorygame/js/jquery.fancybox-media.js?v=1.0.6') }}"></script>
+		<script type="text/javascript" src="{{ asset('bundles/mgmemorygame/js/launchAjax.js') }}"></script>
+		<script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+		<script src="{{ path('fos_js_routing_js', {'callback': 'fos.Router.setData'}) }}"></script>
+	{% endblock %}
+</head>
+<body>
 
-{% block content %}
-    <h1>Connexion</h1>
-    <form action="{{ path('mg_memory_game_connexion') }}" method="post">
-        <table id="connexion_form">
-            <tfoot>
-                <tr>
-                    <td colspan="2">
-                        <input type="submit" value="Connexion" />
-                    </td>
-                </tr>
-            </tfoot>
-            <tbody>
-                <tr>
-                    <th>{{ form_label() }}</th>
-                    <td>
-                        {{ form_errors() }}
-                        {{ form_widget() }}
-                    </td>
-                </tr>
-                <tr>
-                    <th>{{ form_label() }}</th>
-                    <td>
-                        {{ form_errors() }}
-                        {{ form_widget() }}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    {{ form_end(form) }}
-{% endblock %}
+<form id="loginForm" action="{{ path('login_check') }}" method="post" target="_parent">
+    <label for="username">Login :</label>
+    <input type="text" id="username" name="_login" value="{{ last_login }}" />
+
+    <label for="password">Mot de passe :</label>
+    <input type="password" id="password" name="_password" />
+
+    <input type="hidden" name="_target_path" value="/" />
+
+    <button type="sumbit">Connexion</button>
+</form>
+</body>
+</html>

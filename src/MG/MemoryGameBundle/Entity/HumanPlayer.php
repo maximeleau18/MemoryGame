@@ -14,16 +14,17 @@ namespace MG\MemoryGameBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * HumanPlayer entity
  * @ORM\Table(name="human_player")
- * @ORM\Entity(repositoryClass="MG\MemoryGameBundle\Repository\ComputerPlayerRepository")
+ * @ORM\Entity(repositoryClass="MG\MemoryGameBundle\Repository\HumanPlayerRepository")
  */
-class HumanPlayer extends Player
+class HumanPlayer extends Player implements UserInterface, \Serializable
 {
 	/**
-	 * HumanPlayer Login
+	 * HumanPlayer Username
 	 * @ORM\Column(type="string", length=255, nullable=false, unique=true)
 	 * @Assert\NotBlank(
 	 * 		message = "Vous devez renseigner un login"
@@ -36,7 +37,13 @@ class HumanPlayer extends Player
      * )
 	 * @var string
 	 */
-	protected $login;
+	protected $username;
+	
+	/**
+	 * HumanPlayer Encoders
+	 * @ORM\Column(type="string", length=32)
+	 */
+	protected $salt;
 	
 	/**
 	 * HumanPlayer Password
@@ -73,26 +80,34 @@ class HumanPlayer extends Player
 	protected $createdAt;
 	
 	/**
-	 * Set login
+	 * Default Constructor
+	 */
+	public function __construct()
+	{
+		$this->salt = md5(uniqid(null, true));
+	}
+	
+	/**
+	 * Set Username
 	 *
-	 * @param string $login
+	 * @param string $username
 	 * @return HumanPlayer
 	 */
-	public function setLogin($login)
+	public function setUsername($username)
 	{
-		$this->login = $login;
+		$this->username = $username;
 	
 		return $this;
 	}
 	
 	/**
-	 * Get login
+	 * Get Username
 	 *
 	 * @return string
 	 */
-	public function getLogin()
+	public function getUsername()
 	{
-		return $this->login;
+		return $this->username;
 	}
 	
 	/**
@@ -178,5 +193,52 @@ class HumanPlayer extends Player
     public function getId()
     {
         return $this->id;
+    }
+    
+    public function getSalt()
+    {
+    	return $this->salt;
+    }
+    
+    public function getRoles()
+    {
+    	return array('ROLE_USER');
+    }
+    
+    public function eraseCredentials()
+    {
+    }
+    
+    /**
+     * @see \Serializable::serialize()
+     */
+    public function serialize()
+    {
+    	return serialize(array(
+    			$this->id,
+    	));
+    }
+    
+    /**
+     * @see \Serializable::unserialize()
+     */
+    public function unserialize($serialized)
+    {
+    	list (
+    			$this->id,
+    	) = unserialize($serialized);
+    }
+
+    /**
+     * Set salt
+     *
+     * @param string $salt
+     * @return HumanPlayer
+     */
+    public function setSalt($salt)
+    {
+        $this->salt = $salt;
+
+        return $this;
     }
 }
