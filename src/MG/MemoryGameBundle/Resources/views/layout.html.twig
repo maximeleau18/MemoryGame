@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-	{% block title %}    	
-	{% endblock %}
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	{% block stylesheets %}
 		<link rel="stylesheet" href="{{ asset('bundles/mgmemorygame/css/main.css') }}" type="text/css" />
@@ -22,25 +20,40 @@
 	{% endblock %}
 </head>
 <body>
+<!--  Black bar informations -->
+	<div id="header-logo">
+		<a title="Se rendre à l'Accueil" href="{{ path('mg_memory_game_homepage') }}" ><img src="{{ asset('bundles/mgmemorygame/images/Logo.png') }}" alt="Logo" title="Logo" /></a>
+	</div>
 	<header>
 	{% if app.user is not null %}
-		Bonjour {{ app.user.username }} 
-		<form method="post" action="{{ path('logout') }}">
-	    	<button type="submit">Se déconnecter</button>
-		</form>
+		<div id="header-content">
+			Bonjour {{ app.user.username }} 
+		</div>
+		<div id="header-deco">
+			<form action="{{ path('logout') }}" method="post">
+	    		<button type="submit">Se déconnecter</button>
+			</form>
+		</div>
 	{% else %}
-		<div>
+		<div id="header-co">
 			<a id="connectionDiv" data-fancybox-type="iframe" href="{{ path('login') }}">
-				TEST HEADER
+				Connexion / Inscription
 			</a>
 		</div>
 	{% endif %}
-	<header>
+	</header>
+<!--  End Black bar informations -->
+<!-- Content which can be changed -->
 	{%  block content %}
+	<div id="main-content">
+		Contenu
+	</div>
 	{% endblock %}
+<!-- End Content -->
+<!-- Footer -->
 	<footer>
 		<div>About FOOTER</div>
 	</footer>
-	
+<!-- End Footer -->
 </body>
 </html>
