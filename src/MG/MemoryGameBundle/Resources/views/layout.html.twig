@@ -7,6 +7,7 @@
 		<link rel="stylesheet" type="text/css" href="{{ asset('bundles/mgmemorygame/css/jquery.fancybox.css?v=2.1.5') }}" type="text/css"/>
 		<link rel="stylesheet" type="text/css" href="{{ asset('bundles/mgmemorygame/css/jquery.fancybox-thumbs.css?v=1.0.7') }}" type="text/css"/>
 		<link rel="stylesheet" type="text/css" href="{{ asset('bundles/mgmemorygame/css/jquery.fancybox-buttons.css?v=1.0.5') }}" type="text/css"/>
+		<link rel="stylesheet" type="text/css" href="{{ asset('bundles/mgmemorygame/css/navbar.css') }}" type="text/css" />
 	{% endblock %}
 	{% block javascripts %}
 		<script type="text/javascript" src="{{ asset('bundles/mgmemorygame/js/jquery-1.11.2.js') }}"></script>
@@ -22,7 +23,7 @@
 <body>
 <!--  Black bar informations -->
 	<div id="header-logo">
-		<a title="Se rendre à l'Accueil" href="{{ path('mg_memory_game_homepage') }}" ><img src="{{ asset('bundles/mgmemorygame/images/Logo.png') }}" alt="Logo" title="Logo" /></a>
+		<a title="Se rendre à l'Accueil" href="{{ path('mg_memory_game_homepage') }}" ><img src="{{ asset('bundles/mgmemorygame/images/Logo.png') }}" alt="Logo" /></a>
 	</div>
 	<header>
 	{% if app.user is not null %}
@@ -43,16 +44,46 @@
 	{% endif %}
 	</header>
 <!--  End Black bar informations -->
-<!-- Content which can be changed -->
-	{%  block content %}
-	<div id="main-content">
-		Contenu
+<!-- Drop down menu jQuery -->
+	<div id="navig">
+		<nav>
+        <ul class="menu">
+          <li class="home current"><a href="{{ path('mg_memory_game_homepage') }}" title="Se rendre à l'Accueil"></a></li>
+          <li><a href="#"><span>Jouer</span></a>
+            <ul class="sub-menu">
+              <li><a href="#" title="Nouvelle partie solo">Nouvelle partie - Solo -</a></li>
+              <li><a href="#" title="Nouvelle partie multi-joueurs">Nouvelle partie - Multi-joueurs -</a></li>
+            </ul>
+          </li>
+          <li><a><span>Mon profil</span></a>
+            <ul class="sub-menu">
+              <li><a href="#" title="Editer mon profil">Editer mon profil</a></li>
+              <li><a href="#" title="Mes scores">Mes scores</a></li>
+            </ul>
+          </li>
+          <li><a><span>Livre des records</span></a>
+            <ul class="sub-menu">
+              <li><a href="#" title="Meilleurs scores Solo">Mode Solo</a></li>
+              <li><a href="#" title="Meilleurs scores multi-joueurs">Mode Multi-joueurs</a></li>
+            </ul>
+          </li>
+          <li><a href="#" title="Contactez-nous"><span>Contactez-nous</span></a></li>
+        </ul>
+      </nav>
 	</div>
-	{% endblock %}
+<!-- End Drop down menu -->
+<!-- Content which can be changed -->
+	{% block content %}
+	{% endblock %}	
 <!-- End Content -->
 <!-- Footer -->
 	<footer>
-		<div>About FOOTER</div>
+		<div class="footer-links">
+			<a href="#" title="A propos">A propos</a> // <a href="#" title="Nous contacter">Nous contacter</a>
+		</div>
+		<div class="footer-copyright">
+			Copyright &copy; 2015 Société MemoryGame All rights reserved
+		</div>
 	</footer>
 <!-- End Footer -->
 </body>
