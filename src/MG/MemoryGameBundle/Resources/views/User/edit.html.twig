@@ -1,0 +1,52 @@
+
+{% extends 'MGMemoryGameBundle::layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+{% endblock %}
+
+{% block content %}
+
+	{% if form_errors(edit_form) %}
+		form_errors(edit_form)
+	{% endif %}
+	    <h1>Editez votre profil</h1>
+	    <form action="{{ path('user_update', {'user': app.user}) }}" method="post" {{ form_enctype(edit_form) }}>
+			<label id="lblLogin" for="profile_username">Votre pseudo :</label>			    
+			<div class="errors">    
+				{{ form_errors(edit_form.username) }}
+			</div>
+	        {{ form_widget(edit_form.username, {'attr': {'class': 'username', 'placeholder':'Pseudo'}}) }}
+					
+			<label id="lblCurrentPassword" for="profile_currentpassword">Votre mot de passe actuel :</label>
+			<div class="errors">
+	        	{{ form_errors(edit_form.currentpassword) }}
+	        </div>		    
+	        {{ form_widget(edit_form.currentpassword, {'attr': {'class': 'currentpassword', 'placeholder':'Mot de passe actuel'}}) }}
+			
+			<label id="lblPassword" for="profile_password_first">Votre mot de passe :</label>
+			<div class="errors">
+	        	{{ form_errors(edit_form.password.first) }}
+	        </div>		    
+	        {{ form_widget(edit_form.password.first, {'attr': {'class': 'password', 'placeholder':'Mot de passe'}}) }}
+			   
+			<label id="lblPasswordConf" for="profile_password_second">Confirmez votre mot de passe :</label>	
+			<div class="errors">			    
+	        	{{ form_errors(edit_form.password.second) }}
+	        </div> 	    
+	    	{{ form_widget(edit_form.password.second, {'attr': {'class': 'confirm', 'placeholder':'Confirmation'}}) }}
+	    	
+	    	<label id="lblBirthdate" for="profile_birthdate">Votre date de naissance :</label>		
+			<div class="errors">	
+	    		{{ form_errors(edit_form.birthdate) }}  
+	    	</div>  
+	    	{{ form_widget(edit_form.birthdate, {'attr': {'class': 'birthdate'}}) }}
+			<br />
+			<button type="sumbit">Valider</button>
+			{{ form_widget(edit_form._token) }}
+		</form>		
+{% endblock %}

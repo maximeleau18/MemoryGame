@@ -7,7 +7,6 @@ security:
     providers:
         administrators:
             entity: { class: "MGMemoryGameBundle:HumanPlayer" }
-
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt|error)|css|images|js)/
@@ -49,3 +48,6 @@ security:
             logout: ~
         default:
             anonymous: ~
+    access_control:
+        - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }

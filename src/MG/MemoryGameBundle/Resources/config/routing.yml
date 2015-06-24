@@ -7,8 +7,27 @@ mg_memory_game_homepage:
 # The route to launch connexion user form      
 login:
     pattern:   /login
-    defaults:  { _controller: "MGMemoryGameBundle:UserConnexion:login" }
+    defaults:  { _controller: "MGMemoryGameBundle:User:login" }
 login_check:
     pattern:   /login_check
+# The route to logout user
 logout:
     pattern:   /logout
+# The route to create user account
+register:
+    pattern:   /register
+    defaults:  { _controller: "MGMemoryGameBundle:User:create" }
+# The route to show user edit form 
+user_edit:
+    pattern:  /profile
+    defaults: { _controller: "MGMemoryGameBundle:User:edit" }
+# The route to update user profile
+user_update:
+    pattern:  /profile/update
+    defaults: { _controller: "MGMemoryGameBundle:User:update" }
+    requirements: { _method: post|put }
+# The route to delete user account
+profile_delete:
+    pattern:  /profile/delete
+    defaults: { _controller: "MGMemoryGameBundle:User:delete" }
+    requirements: { _method: post|delete }
