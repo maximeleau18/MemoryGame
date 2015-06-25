@@ -79,7 +79,7 @@ class UserController extends Controller
     		$em->flush();
     		// Reset values in the form
     		$form = $this->createForm(new RegistrationType(), new HumanPlayer());
-    		
+    		    		
     		return $this->render('MGMemoryGameBundle:User:connexion.html.twig', array(
         		'last_login' => '',
         		'errorLogin'         => '',
@@ -147,12 +147,10 @@ class UserController extends Controller
 	    	if ($editForm->isValid()) {
 	    		$factory = $this->get('security.encoder_factory');	    		
 	    		$encoder = $factory->getEncoder($user);
-	    		// Get the current password
 	    		$currentPassword = $editForm->get('currentpassword')->getData();	   	    		
 	    		$currentPasswordEncoded = $encoder->encodePassword($currentPassword, $user->getSalt());
 	    		
-	    		if ($currentPasswordEncoded === $oldPassword){	    			
-					// Update user in DataBase
+	    		if ($currentPasswordEncoded === $oldPassword){	    
 	    			$newPasswordEncoded = $encoder->encodePassword($editForm->get('password')->getData(), $user->getSalt());
 	    			if ($oldPassword === $newPasswordEncoded){
 	    				$editForm->get('currentpassword')->addError(new FormError('Votre nouveau mot de passe doit être différent de l\'ancien.'));
@@ -163,12 +161,17 @@ class UserController extends Controller
 	    						'delete_form' => $deleteForm->createView(),
 	    				
 	    				));
-	    			}else{	    			
+	    			}else{	    	
+	    				// Update user in DataBase		
 		    			$user->setPassword($newPasswordEncoded);
 		    			$em->persist($user);
 		    			$em->flush();
 		    			
-		    			return $this->redirect($this->generateUrl('mg_memory_game_homepage'));
+		    			$flashBag = $this->get('session')->getFlashBag();
+		    			$flashBag->get('notice'); // gets message and clears type
+		    			$flashBag->set('notice', "Votre compte a bien été modifié.");
+		    			
+		    			return $this->redirect($this->generateUrl('user_edit'));
 	    			}
 	    		}else {
 	    			$editForm->get('currentpassword')->addError(new FormError('Votre ancien mot de passe n\'est pas valide.'));
@@ -197,22 +200,48 @@ class UserController extends Controller
     	if( $this->get('security.context')->isGranted('IS_AUTHENTICATED_FULLY') ){	
 	    	$request = $this->getRequest();
 	    	$userId = $this->get('security.context')->getToken()->getUser()->getId();
-	    	$form = $this->createDeleteForm($userId);
-	    	$form->bind($request);
-	    
-	    	if ($form->isValid()) {
-	    		$em = $this->getDoctrine()->getEntityManager();
-	    		$user = $em->getRepository('MGMemoryGameBundle:HumanPlayer')->find($userId);
-	    
-	    		if (!$user) {
-	    			throw $this->createNotFoundException('Impossible de trouver ce joueur.');
-	    		}
-	    
-	    		$em->remove($user);
-	    		$em->flush();
+	    	$em = $this->getDoctrine()->getEntityManager();
+	    	$user = $em->getRepository('MGMemoryGameBundle:HumanPlayer')->find($userId);
+	    	
+	    	if (!$user) {
+	    		throw $this->createNotFoundException('Impossible de trouver ce joueur.');
 	    	}
+	    	
+	    	$editForm   = $this->createForm(new ProfileType(), $user);
+	    	$deleteForm = $this->createDeleteForm($userId);
+	    	// Get user password in DataBase
+	    	$oldPassword = $user->getPassword();
+	    	
+	    	$deleteForm->bind($request);
 	    
-	    	return $this->redirect($this->generateUrl('mg_memory_game_homepage'));
+	    	if ($deleteForm->isValid()) {	    	 		
+	    		$factory = $this->get('security.encoder_factory');
+	    		$encoder = $factory->getEncoder($user);
+	    		$currentPassword = $deleteForm->get('currentpassword')->getData();
+	    		$currentPasswordEncoded = $encoder->encodePassword($currentPassword, $user->getSalt());
+	    		
+	    		if($currentPasswordEncoded === $oldPassword){
+	    			$em->remove($user);
+	    			$em->flush();
+
+	    			$this->get('security.context')->setToken(null);
+
+	    			$flashBag = $this->get('session')->getFlashBag();
+	    			$flashBag->get('notice'); // gets message and clears type
+	    			$flashBag->set('notice', "Votre compte a bien été supprimé.");
+	    			
+	    			return $this->redirect($this->generateUrl('mg_memory_game_homepage'));
+	    		}else{
+	    			$deleteForm->get('currentpassword')->addError(new FormError('Votre ancien mot de passe n\'est pas valide.'));
+	    		}			
+	    	}
+	    	
+	    	return $this->render('MGMemoryGameBundle:User:edit.html.twig', array(
+	    			'user'      => $user,
+	    			'edit_form'   => $editForm->createView(),
+	    			'delete_form' => $deleteForm->createView(),
+	    			 
+	    	));	    	
 	    }else{
 	    	return $this->redirect($this->generateUrl('mg_memory_game_homepage'));
 	    }
@@ -222,6 +251,9 @@ class UserController extends Controller
     {
     	return $this->createFormBuilder(array('user_id' => $userId))
     	->add('user_id', 'hidden')
+    	->add('currentpassword', 'password', array(
+        				'mapped'		  => false
+        		))
     	->getForm()
     	;
     }

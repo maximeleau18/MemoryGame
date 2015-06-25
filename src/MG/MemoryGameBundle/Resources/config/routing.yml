@@ -27,7 +27,7 @@ user_update:
     defaults: { _controller: "MGMemoryGameBundle:User:update" }
     requirements: { _method: post|put }
 # The route to delete user account
-profile_delete:
+user_delete:
     pattern:  /profile/delete
     defaults: { _controller: "MGMemoryGameBundle:User:delete" }
     requirements: { _method: post|delete }

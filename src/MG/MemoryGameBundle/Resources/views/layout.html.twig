@@ -57,7 +57,7 @@
           </li>
           <li><a><span>Mon profil</span></a>
             <ul class="sub-menu">
-              <li><a href="#" title="Editer mon profil">Editer mon profil</a></li>
+              <li><a href="{{ path('user_edit') }}" title="Editer mon profil">Editer mon profil</a></li>
               <li><a href="#" title="Mes scores">Mes scores</a></li>
             </ul>
           </li>
@@ -72,6 +72,15 @@
       </nav>
 	</div>
 <!-- End Drop down menu -->
+	
+<!--  Flash Bag Message -->
+{% for flashMessage in app.session.flashbag.get('notice') %}
+	<div class="flash_notice">
+		{{ flashMessage }}
+    </div>
+{% endfor %}	
+<!--  End Flash Bag Message -->
+
 <!-- Content which can be changed -->
 	{% block content %}
 	{% endblock %}	
