@@ -19,6 +19,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * HumanPlayer entity
+ * 
  * @ORM\Table(name="human_player")
  * @ORM\Entity(repositoryClass="MG\MemoryGameBundle\Repository\HumanPlayerRepository")
  * @UniqueEntity(fields="username", message="Un joueur possède déjà ce pseudo.")
@@ -27,15 +28,16 @@ class HumanPlayer extends Player implements UserInterface, \Serializable
 {
 	/**
 	 * HumanPlayer Username
-	 * @ORM\Column(type="string", length=255, nullable=false, unique=true)
+	 * 
+	 * @ORM\Column(type="string", length=50, nullable=false, unique=true)
 	 * @Assert\NotBlank(
 	 * 		message = "Vous devez renseigner un login"
 	 * )
 	 * @Assert\Length(
      *      min = "3",
-     *      max = "255",
-     *      minMessage = "Votre login doit faire au moins {{ limit }} caractères",
-     *      maxMessage = "Votre login ne peut pas être plus long que {{ limit }} caractères"
+     *      max = "50",
+     *      minMessage = "Votre login doit faire au moins {{ limit }} caractères.",
+     *      maxMessage = "Votre login ne peut pas être plus long que {{ limit }} caractères."
      * )
 	 * @var string
 	 */
@@ -43,12 +45,14 @@ class HumanPlayer extends Player implements UserInterface, \Serializable
 	
 	/**
 	 * HumanPlayer Encoders
+	 * 
 	 * @ORM\Column(type="string", length=32)
 	 */
 	protected $salt;
 	
 	/**
 	 * HumanPlayer Password
+	 * 
 	 * @ORM\Column(type="string", length=255, nullable=false)
 	 * @Assert\NotBlank(
 	 * 		message = "Vous devez renseigner un mot de passe"
@@ -56,8 +60,8 @@ class HumanPlayer extends Player implements UserInterface, \Serializable
 	 * @Assert\Length(
      *      min = "8",
      *      max = "255",
-     *      minMessage = "Votre mot de passe doit faire au moins {{ limit }} caractères",
-     *      maxMessage = "Votre mot de passe ne peut pas être plus long que {{ limit }} caractères"
+     *      minMessage = "Votre mot de passe doit faire au moins {{ limit }} caractères.",
+     *      maxMessage = "Votre mot de passe ne peut pas être plus long que {{ limit }} caractères."
      * )
      *  @var string
 	 */
@@ -65,8 +69,9 @@ class HumanPlayer extends Player implements UserInterface, \Serializable
 	
 	/**
 	 * HumanPlayer Birthdate
+	 * 
 	 * @Assert\NotBlank(
-	 * 		message = "Vous devez renseigner une date de naissance"
+	 * 		message = "Vous devez renseigner une date de naissance."
 	 * )
 	 * @ORM\Column(name="birthdate", type="datetime", nullable=false)
 	 * @var \DateTime
@@ -75,6 +80,7 @@ class HumanPlayer extends Player implements UserInterface, \Serializable
 	
 	/**
 	 * HumanPlayer Created date
+	 * 
 	 * @ORM\Column(name="created_at", type="datetime", nullable=false)
 	 * @var \DateTime
 	 */

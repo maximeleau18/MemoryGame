@@ -3,7 +3,7 @@
 
 {% block stylesheets %}
     {{ parent() }}
-		<link rel="stylesheet" href="{{ asset('bundles/mgmemorygame/css/user_edit.css') }}" type="text/css" />
+	<link rel="stylesheet" href="{{ asset('bundles/mgmemorygame/css/user_edit.css') }}" type="text/css" />
 {% endblock %}
 
 {% block javascripts %}
@@ -14,7 +14,9 @@
 		<!--  Flash Bag Message -->
 		{% for flashMessage in app.session.flashbag.get('notice') %}
 			<div class="flash_notice">
-				<p>{{ flashMessage }}</p>
+				<div id="flash_content">
+					{{ flashMessage }}
+				</div>
 		    </div>
 		{% endfor %}	
 		<!--  End Flash Bag Message -->

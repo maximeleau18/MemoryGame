@@ -23,13 +23,15 @@ class ComputerPlayer extends Player
 {
 	
     /**
+     * Computer Unique ID
+     * 
      * @var integer
      */
     protected $id;
 
 
     /**
-     * Get id
+     * Get Computer Unique ID
      *
      * @return integer 
      */

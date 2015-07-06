@@ -57,7 +57,11 @@ class LoadHumanPlayerData extends AbstractFixture implements OrderedFixtureInter
     	$this->manager->persist($humanPlayer04);
     	
     	$this->manager->flush();
-
+    	
+    	$this->setReference('human_01', $humanPlayer01);
+    	$this->setReference('human_02', $humanPlayer02);
+    	$this->setReference('human_03', $humanPlayer03);
+    	$this->setReference('human_04', $humanPlayer04);
     }
 
   /**

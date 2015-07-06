@@ -1,12 +1,12 @@
 <?php
 /**************************************************************************
- * LoadComputerPlayerData.php, MemoryGame
+ * LoadModeData.php, MemoryGame
  *
  * Maxime Léau Copyright 2015
  * Description :
  * Author(s) : Maxime Léau <maxime.leau@imie-rennes.fr>
  * Licence : All right reserved.
- * Last update : June 14, 2015
+ * Last update : July 06, 2015
  *
  **************************************************************************/
 namespace MG\MemoryGameBundle\DataFixtures\ORM;
@@ -16,9 +16,9 @@ use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use MG\MemoryGameBundle\Entity\ComputerPlayer;
+use MG\MemoryGameBundle\Entity\Mode;
 
-class LoadComputerPlayerData extends AbstractFixture implements OrderedFixtureInterface
+class LoadModeData extends AbstractFixture implements OrderedFixtureInterface
 {
 
 	protected $manager;
@@ -31,26 +31,31 @@ class LoadComputerPlayerData extends AbstractFixture implements OrderedFixtureIn
     {
     	$this->manager = $manager;
     	 
-    	// Make ComputerPlayer
-    	$computerPlayer = $this->makeComputerPlayer();
+    	// Make differents modes
+    	$mode_01 = $this->makeMode("Solo", 2);
+    	$mode_02 = $this->makeMode("Multi-joueurs", 4);
     	
-    	$this->manager->persist($computerPlayer);
+    	
+    	$this->manager->persist($mode_01);
+    	$this->manager->persist($mode_02);
     	$this->manager->flush();
     	
-    	$this->setReference('computer_01', $computerPlayer);
-
+    	$this->setReference('mode-solo', $mode_01);
+    	$this->setReference('mode-multi', $mode_02);
     }
 
   /**
-   * Create a computer player
+   * Create a mode
    * 
-   * @return \MG\MemoryGameBundle\Entity\ComputerPlayer
+   * @return \MG\MemoryGameBundle\Entity\Mode
    */
-    protected function makeComputerPlayer()
+    protected function makeMode($label, $nbMaxPlayers)
     {
-        $computerPlayer = New ComputerPlayer();
+        $mode = New Mode();
+        $mode->setLabel($label);
+        $mode->setNbMaxPlayers($nbMaxPlayers);
 
-        return $computerPlayer;
+        return $mode;
     }
 
     /**
@@ -59,6 +64,6 @@ class LoadComputerPlayerData extends AbstractFixture implements OrderedFixtureIn
      */
     public function getOrder()
     {
-        return 1;
+        return 4;
     }
 }

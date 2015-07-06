@@ -76,8 +76,10 @@
 <!--  Flash Bag Message -->
 {% for flashMessage in app.session.flashbag.get('notice') %}
 	<div class="flash_notice">
-		{{ flashMessage }}
-    </div>
+		<div id="flash_content">
+			{{ flashMessage }}
+		</div>
+	</div>
 {% endfor %}	
 <!--  End Flash Bag Message -->
 

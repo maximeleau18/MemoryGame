@@ -1,6 +1,6 @@
 <?php
 /**************************************************************************
- * LoadComputerPlayerData.php, MemoryGame
+ * LoadDifficultyData.php, MemoryGame
  *
  * Maxime Léau Copyright 2015
  * Description :
@@ -16,9 +16,9 @@ use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use MG\MemoryGameBundle\Entity\ComputerPlayer;
+use MG\MemoryGameBundle\Entity\Difficulty;
 
-class LoadComputerPlayerData extends AbstractFixture implements OrderedFixtureInterface
+class LoadDifficultyData extends AbstractFixture implements OrderedFixtureInterface
 {
 
 	protected $manager;
@@ -31,26 +31,35 @@ class LoadComputerPlayerData extends AbstractFixture implements OrderedFixtureIn
     {
     	$this->manager = $manager;
     	 
-    	// Make ComputerPlayer
-    	$computerPlayer = $this->makeComputerPlayer();
+    	// Make differents difficulties
+    	$difficulty_01 = $this->makeDifficulty("Facile", 8, 180.0);
+    	$difficulty_02 = $this->makeDifficulty("Intermédiaire", 18, 360.0);
+    	$difficulty_03 = $this->makeDifficulty("Difficile", 32, 900.0);
     	
-    	$this->manager->persist($computerPlayer);
+    	
+    	$this->manager->persist($difficulty_01);
+    	$this->manager->persist($difficulty_02);
+    	$this->manager->persist($difficulty_03);
     	$this->manager->flush();
     	
-    	$this->setReference('computer_01', $computerPlayer);
-
+    	$this->setReference('facile', $difficulty_01);
+    	$this->setReference('intermediaire', $difficulty_02);
+    	$this->setReference('difficile', $difficulty_03);
     }
 
   /**
-   * Create a computer player
+   * Create a difficulty
    * 
-   * @return \MG\MemoryGameBundle\Entity\ComputerPlayer
+   * @return \MG\MemoryGameBundle\Entity\Difficulty
    */
-    protected function makeComputerPlayer()
+    protected function makeDifficulty($label, $nbCoupleCards, $timer)
     {
-        $computerPlayer = New ComputerPlayer();
+        $difficulty = New Difficulty();
+        $difficulty->setLabel($label);
+        $difficulty->setNbCoupleCards($nbCoupleCards);
+        $difficulty->setTimer($timer);
 
-        return $computerPlayer;
+        return $difficulty;
     }
 
     /**
@@ -59,6 +68,6 @@ class LoadComputerPlayerData extends AbstractFixture implements OrderedFixtureIn
      */
     public function getOrder()
     {
-        return 1;
+        return 3;
     }
 }

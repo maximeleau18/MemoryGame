@@ -27,6 +27,7 @@ class Player
 
     /**
      * Technical ID.
+     * 
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
