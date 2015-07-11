@@ -35,20 +35,14 @@ class Result{
 	/**
 	 * @ORM\Id
 	 * @ORM\ManyToOne(targetEntity="MG\MemoryGameBundle\Entity\Player")
+	 * @ORM\JoinColumn(onDelete="CASCADE"))
 	 */
 	private $player;
 	
 	/**
 	 * Result Time
 	 *
-	 * @ORM\Column(type="float", nullable=false, columnDefinition="float unsigned")
-	 * @Assert\NotBlank(
-	 * 		message = "Vous devez renseigner le temps réalisé."
-	 * )
-	 * @Assert\Range(
-	 *      min = 1.0,
-	 *      minMessage = "Vous ne pouvez pas réaliser un temps inférieur à 1s."
-	 * )
+	 * @ORM\Column(type="float", nullable=true)
 	 * @var float
 	 */
 	private $time;
@@ -56,7 +50,14 @@ class Result{
 	/**
 	 * Player Result rank
 	 *
-	 * @ORM\Column(type="smallint", nullable=true)
+	 * @ORM\Column(name="result_rank", type="smallint", nullable=false, columnDefinition="smallint unsigned not null")
+	 * @Assert\NotBlank(
+	 * 		message = "Vous devez renseigner le classement obtenu."
+	 * )
+	 * @Assert\Range(
+	 *      min = 1,
+	 *      minMessage = "Vous ne pouvez pas renseigner un classement inférieur à 1."
+	 * )
 	 * @var smallint
 	 */
 	private $rank;

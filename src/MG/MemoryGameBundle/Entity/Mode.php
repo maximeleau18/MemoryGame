@@ -31,7 +31,7 @@ class Mode{
 	 * @ORM\Id
 	 * @ORM\Column(type="smallint")
 	 * @ORM\GeneratedValue(strategy="AUTO")
-	 * @var integer
+	 * @var smallint
 	 */
 	private $id;
 	
@@ -56,7 +56,7 @@ class Mode{
 	/**
 	 * Mode Number of players
 	 * 
-	 * @ORM\Column(type="smallint", nullable=false, columnDefinition="smallint unsigned")
+	 * @ORM\Column(type="smallint", nullable=false, columnDefinition="smallint unsigned not null")
 	 * @Assert\NotBlank(
 	 * 		message = "Vous devez renseigner le nombre de joueurs pour ce mode."
 	 * )
@@ -69,23 +69,7 @@ class Mode{
 	 * @var smallint
 	 */
 	private $nbMaxPlayers;
-	
-	/**
-	 * Mode Games
-	 *
-	 * @ORM\OneToMany(targetEntity="MG\MemoryGameBundle\Entity\Game", mappedBy="mode")
-	 * @var \Doctrine\Common\Collections\Collection
-	 */
-	private $games;
-
-	/**
-	 * Constructor
-	 */
-	public function __construct()
-	{
-		$this->games = new \Doctrine\Common\Collections\ArrayCollection();
-	}
-	
+		
 	/**
 	 *
 	 * Get ID
@@ -133,39 +117,4 @@ class Mode{
 		$this->nbMaxPlayers = $nbMaxPlayers;
 		return $this;
 	}
-	
-    /**
-     * Get games
-     *
-     * @return \MG\MemoryGameBundle\Entity\Game 
-     */
-    public function getGames()
-    {
-        return $this->games;
-    }
-
-    /**
-     * Add games
-     *
-     * @param \MG\MemoryGameBundle\Entity\Game $games
-     * @return Mode
-     */
-    public function addGame(\MG\MemoryGameBundle\Entity\Game $games)
-    {
-        $this->games[] = $games;
-        $games->setMode($this);
-
-        return $this;
-    }
-
-    /**
-     * Remove games
-     *
-     * @param \MG\MemoryGameBundle\Entity\Game $games
-     */
-    public function removeGame(\MG\MemoryGameBundle\Entity\Game $games)
-    {
-        $this->games->removeElement($games);
-    }
-    
 }

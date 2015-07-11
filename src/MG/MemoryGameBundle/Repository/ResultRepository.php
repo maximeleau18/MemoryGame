@@ -12,4 +12,31 @@ use Doctrine\ORM\EntityRepository;
  */
 class ResultRepository extends EntityRepository
 {
+	public function getResultsGamesByUserId($player = null, $offset = null, $max = null)
+	{
+		$qb = $this->createQueryBuilder('r')
+		->where('r.player = :player')
+        ->setParameter('player', $player)
+		->addOrderBy('g.playedAt', 'DESC');
+	
+		if($max) {
+			$qb->setMaxResults($max);
+		}
+	
+		if($offset) {
+			$qb->setFirstResult($offset);
+		}
+	
+		if($player) {
+			$qb->join('r.player', 'hp')
+			->addSelect('hp')
+			->join('r.game', 'g')
+			->addSelect('g')
+			;
+		}
+	
+		$query = $qb->getQuery();
+	
+		return $query->getResult();
+	}
 }

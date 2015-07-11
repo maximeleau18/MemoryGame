@@ -27,6 +27,13 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class HumanPlayer extends Player implements UserInterface, \Serializable
 {
 	/**
+	 * Human Player Unique ID
+	 * 
+	 * @var integer
+	 */
+	protected $id;
+	
+	/**
 	 * HumanPlayer Username
 	 * 
 	 * @ORM\Column(type="string", length=50, nullable=false, unique=true)
@@ -87,11 +94,20 @@ class HumanPlayer extends Player implements UserInterface, \Serializable
 	protected $createdAt;
 	
 	/**
+	 * HumanPlayer RecordsBooks
+	 *
+	 * @ORM\OneToMany(targetEntity="MG\MemoryGameBundle\Entity\RecordsBook", mappedBy="player", cascade={"persist", "remove"})
+	 * @var \Doctrine\Common\Collections\Collection
+	 */
+	private $recordsBooks;
+		
+	/**
 	 * Default Constructor
 	 */
 	public function __construct()
 	{
 		$this->salt = md5(uniqid(null, true));
+		$this->recordsBooks = new \Doctrine\Common\Collections\ArrayCollection();
 	}
 	
 	/**
@@ -185,12 +201,6 @@ class HumanPlayer extends Player implements UserInterface, \Serializable
 	{
 		return $this->createdAt;
 	}
-	
-    /**
-     * @var integer
-     */
-    protected $id;
-
 
     /**
      * Get id
@@ -247,5 +257,39 @@ class HumanPlayer extends Player implements UserInterface, \Serializable
         $this->salt = $salt;
 
         return $this;
+    }
+
+    /**
+     * Add recordsBooks
+     *
+     * @param \MG\MemoryGameBundle\Entity\RecordsBook $recordsBooks
+     * @return HumanPlayer
+     */
+    public function addRecordsBook(\MG\MemoryGameBundle\Entity\RecordsBook $recordsBook)
+    {
+        $this->recordsBooks[] = $recordsBook;
+        $recordsBook->setPlayer($this);
+
+        return $this;
+    }
+
+    /**
+     * Remove recordsBooks
+     *
+     * @param \MG\MemoryGameBundle\Entity\RecordsBook $recordsBooks
+     */
+    public function removeRecordsBook(\MG\MemoryGameBundle\Entity\RecordsBook $recordsBooks)
+    {
+        $this->recordsBooks->removeElement($recordsBooks);
+    }
+
+    /**
+     * Get recordsBooks
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getRecordsBooks()
+    {
+        return $this->recordsBooks;
     }
 }

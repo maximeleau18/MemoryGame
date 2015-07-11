@@ -34,7 +34,6 @@ class Player
      * @var integer
      */
     protected $id;
-    
 
     /**
      * Get id

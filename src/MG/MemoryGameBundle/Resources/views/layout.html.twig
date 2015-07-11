@@ -7,7 +7,8 @@
 		<link rel="stylesheet" type="text/css" href="{{ asset('bundles/mgmemorygame/css/jquery.fancybox.css?v=2.1.5') }}" type="text/css"/>
 		<link rel="stylesheet" type="text/css" href="{{ asset('bundles/mgmemorygame/css/jquery.fancybox-thumbs.css?v=1.0.7') }}" type="text/css"/>
 		<link rel="stylesheet" type="text/css" href="{{ asset('bundles/mgmemorygame/css/jquery.fancybox-buttons.css?v=1.0.5') }}" type="text/css"/>
-		<link rel="stylesheet" type="text/css" href="{{ asset('bundles/mgmemorygame/css/navbar.css') }}" type="text/css" />
+		<link rel="stylesheet" type="text/css" href="{{ asset('bundles/mgmemorygame/css/navbar.css') }}" type="text/css" />		
+		<link rel="stylesheet" href="{{ asset('bundles/mgmemorygame/css/user_edit.css') }}" type="text/css" />
 	{% endblock %}
 	{% block javascripts %}
 		<script type="text/javascript" src="{{ asset('bundles/mgmemorygame/js/jquery-1.11.2.js') }}"></script>
@@ -49,22 +50,24 @@
 		<nav>
         <ul class="menu">
           <li class="home current"><a href="{{ path('mg_memory_game_homepage') }}" title="Se rendre à l'Accueil"></a></li>
-          <li><a href="#"><span>Jouer</span></a>
+          <li><a><span>Jouer</span></a>
             <ul class="sub-menu">
-              <li><a href="#" title="Nouvelle partie solo">Nouvelle partie - Solo -</a></li>
-              <li><a href="#" title="Nouvelle partie multi-joueurs">Nouvelle partie - Multi-joueurs -</a></li>
+            {% for m in modes %}
+              <li><a href="#" title="Nouvelle partie {{ m.label }}">Nouvelle partie - {{ m.label }} -</a></li>
+            {% endfor %}
             </ul>
           </li>
           <li><a><span>Mon profil</span></a>
             <ul class="sub-menu">
               <li><a href="{{ path('user_edit') }}" title="Editer mon profil">Editer mon profil</a></li>
-              <li><a href="#" title="Mes scores">Mes scores</a></li>
+              <li><a href="{{ path('scores_user_show') }}" title="Mes scores">Mes scores</a></li>
             </ul>
           </li>
-          <li><a><span>Livre des records</span></a>
+          <li><a href="{{ path('records_all_show') }}" title="Meilleurs scores"><span>Livre des records</span></a>
             <ul class="sub-menu">
-              <li><a href="#" title="Meilleurs scores Solo">Mode Solo</a></li>
-              <li><a href="#" title="Meilleurs scores multi-joueurs">Mode Multi-joueurs</a></li>
+              {% for m in modes %}
+              	<li><a href="{{ path('records_mode_show', { 'id': m.id }) }}" title="Mode {{ m.label }}">Mode {{ m.label }}</a></li>	
+              {% endfor %}
             </ul>
           </li>
           <li><a href="#" title="Contactez-nous"><span>Contactez-nous</span></a></li>

@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Doctrine\DBAL\Types\SmallIntType;
 
 /**
  * Difficulty entity
@@ -31,7 +32,7 @@ class Difficulty{
 	 * @ORM\Id
 	 * @ORM\Column(type="smallint")
 	 * @ORM\GeneratedValue(strategy="AUTO")
-	 * @var integer
+	 * @var smallint
 	 */
 	private $id;
 	
@@ -55,7 +56,7 @@ class Difficulty{
 	/**
 	 * Difficulty Number couple cards
 	 * 
-	 * @ORM\Column(type="smallint", nullable=false, columnDefinition="smallint unsigned")
+	 * @ORM\Column(type="smallint", nullable=false, columnDefinition="smallint unsigned not null")
 	 * @Assert\NotBlank(
 	 * 		message = "Vous devez renseigner le nombre de paires de cartes."
 	 * )
@@ -72,7 +73,7 @@ class Difficulty{
 	/**
 	 * Difficulty Timer
 	 * 
-	 * @ORM\Column(type="float", nullable=false, columnDefinition="float unsigned")
+	 * @ORM\Column(type="float", nullable=false, columnDefinition="float unsigned not null")
 	 * @Assert\NotBlank(
 	 * 		message = "Vous devez renseigner un minuteur (en secondes)."
 	 * )
@@ -85,15 +86,7 @@ class Difficulty{
 	 * @var float
 	 */
 	private $timer;
-	
-	/**
-	 * Difficulty Games
-	 * 
-	 * @ORM\OneToMany(targetEntity="MG\MemoryGameBundle\Entity\Game", mappedBy="difficulty")
-	 * @var \Doctrine\Common\Collections\Collection
-	 */
-	private $games;
-	
+		
 	/**
 	 * Constructor
 	 */
@@ -166,40 +159,5 @@ class Difficulty{
 	public function setTimer($timer) {
 		$this->timer = $timer;
 		return $this;
-	}		
-
-    /**
-     * Add Games
-     *
-     * @param \MG\MemoryGameBundle\Entity\Game $games
-     * @return \MG\MemoryGameBundle\Entity\Difficulty
-     */
-    public function addGame(\MG\MemoryGameBundle\Entity\Game $games)
-    {
-        $this->games[] = $games;
-		$games->setDifficulty($this);
-		
-        return $this;
-    }
-
-    /**
-     * Remove Games
-     *
-     * @param \MG\MemoryGameBundle\Entity\Game $games
-     */
-    public function removeGame(\MG\MemoryGameBundle\Entity\Game $games)
-    {
-        $this->games->removeElement($games);
-    }
-
-    /**
-     * Get Games
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getGames()
-    {
-        return $this->games;
-    }
-
+	}
 }

@@ -38,25 +38,22 @@ class LoadGameData extends AbstractFixture implements OrderedFixtureInterface
     	$this->manager->persist($game_01);
     	$this->manager->flush();
     	
-    	$result_game_01 = $this->makeGameResult($game_01, $this->getReference("human_01"), true, 1, 98.0);
-    	$this->manager->persist($result_game_01);
-    	$this->manager->flush();
-    	
-    	$result_game_01 = $this->makeGameResult($game_01, $this->getReference("computer_01"), false, 2, null);
-    	$this->manager->persist($result_game_01);
-    	$this->manager->flush();
-    	
     	$game_02 = $this->makeGame(New \DateTime("2015-05-06 12:45:12.000"), $this->getReference("mode-solo"), $this->getReference("intermediaire"));
     	$this->manager->persist($game_02);
     	$this->manager->flush();
-    	 
-    	$result_game_02 = $this->makeGameResult($game_02, $this->getReference("human_03"), true, 1, 125.5);
-    	$this->manager->persist($result_game_02);
+    	
+    	$game_03 = $this->makeGame(New \DateTime("2015-06-24 22:33:10.000"), $this->getReference("mode-solo"), $this->getReference("intermediaire"));
+    	$this->manager->persist($game_03);
+    	$this->manager->flush();    	
+
+    	$game_04 = $this->makeGame(New \DateTime("2015-04-19 21:01:25.000"), $this->getReference("mode-solo"), $this->getReference("intermediaire"));
+    	$this->manager->persist($game_04);
     	$this->manager->flush();
-    	 
-    	$result_game_02 = $this->makeGameResult($game_02, $this->getReference("computer_01"), false, 2, null);
-    	$this->manager->persist($result_game_02);
-    	$this->manager->flush();
+    	
+    	$this->setReference("game_01", $game_01);
+    	$this->setReference("game_02", $game_02);
+    	$this->setReference("game_03", $game_03);  
+    	$this->setReference("game_04", $game_04);    	
     }
 
   /**
@@ -68,28 +65,10 @@ class LoadGameData extends AbstractFixture implements OrderedFixtureInterface
     {
         $game = New Game();
         $game->setPlayedAt($playedAt);
-		$mode->addGame($game);
-		$difficulty->addGame($game);
+		$game->setDifficulty($difficulty);
+		$game->setMode($mode);
 				
         return $game;
-    }
-    
-    /**
-     * Create a game result
-     * 
-     * @return \MG\MemoryGameBundle\Entity\Result
-     * 
-     */
-    protected function makeGameResult($game, $player, $isWinner, $rank, $time)
-    {
-    	$result = New Result();
-    	$result->setGame($game);
-    	$result->setPlayer($player);
-    	$result->setIsWinner($isWinner);
-    	$result->setRank($rank);
-    	$result->setTime($time);
-    	
-    	return $result;
     }
 
     /**

@@ -31,3 +31,17 @@ user_delete:
     pattern:  /profile/delete
     defaults: { _controller: "MGMemoryGameBundle:User:delete" }
     requirements: { _method: post|delete }
+# The route to check all scores of connected user
+scores_user_show:
+    pattern:  /showmyscores
+    defaults: { _controller: "MGMemoryGameBundle:User:listGames" }
+# The route to get records by mode ID
+records_mode_show:
+    pattern:  /records/mode/{id}
+    defaults: { _controller: "MGMemoryGameBundle:RecordsBook:listRecords" }
+    requirements:
+        id:  \d+
+# The route to get all records
+records_all_show:
+    pattern:  /records
+    defaults: { _controller: "MGMemoryGameBundle:RecordsBook:listAllRecords" }

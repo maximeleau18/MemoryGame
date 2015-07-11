@@ -19,6 +19,26 @@ class UserController extends Controller
 	 */
 	protected $container;
 	
+	protected $modes;
+	
+	protected $difficulties;
+	
+	protected $manager;
+	
+	public function loadData()
+	{
+		$this->manager = $this->getDoctrine()->getManager();
+		$this->modes = $this->manager->getRepository('MGMemoryGameBundle:Mode')->findAll();
+		$this->difficulties = $this->manager->getRepository('MGMemoryGameBundle:Difficulty')->findAll();
+			
+		if (!$this->modes) {
+			throw $this->createNotFoundException('Aucun mode de jeu trouvé.');
+		}
+		if (!$this->difficulties) {
+			throw $this->createNotFoundException('Aucune difficulté de jeu trouvée.');
+		}
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -29,13 +49,17 @@ class UserController extends Controller
 	
     public function loginAction()
     {
+    	$this->loadData();
         $request = $this->getRequest();
         $session = $request->getSession();
         $objUser = $this->get('security.context')->getToken()->getUser();
         
         if (!$objUser){
-        	// If user is still connected
-        	return $this->render('MGMemoryGameBundle:Default:index.html.twig');
+        	// If user is still connected        	        	 
+        	return $this->render('MGMemoryGameBundle:Default:index.html.twig', array(
+        			'modes'      => $this->modes,
+        			'difficulties' => $this->difficulties,
+        	));
         }else{
         	if ($request->attributes->has(SecurityContext::AUTHENTICATION_ERROR)) {
         		$error = $request->attributes->get(SecurityContext::AUTHENTICATION_ERROR);
@@ -53,12 +77,15 @@ class UserController extends Controller
         			'errorRegister'         => '',
         			'form' => $form->createView(),
         			'success' => '',
+	    			'modes'      => $this->modes,
+	    			'difficulties' => $this->difficulties,
         		 	));
         }
     }
     
     public function createAction()
     {
+    	$this->loadData();
     	$request = $this->getRequest();
     	$form = $this->createForm(new RegistrationType(), new HumanPlayer());
     	$form->bind($request);
@@ -74,9 +101,8 @@ class UserController extends Controller
     		$user->setBirthdate($form->get('birthdate')->getData());
     		$user->setCreatedAt(New \DateTime());
     		
-    		$em = $this->getDoctrine()->getEntityManager();
-    		$em->persist($user);
-    		$em->flush();
+    		$this->manager->persist($user);
+    		$this->manager->flush();
     		// Reset values in the form
     		$form = $this->createForm(new RegistrationType(), new HumanPlayer());
     		    		
@@ -86,6 +112,8 @@ class UserController extends Controller
     			'errorRegister'         => '',
     			'form' => $form->createView(),
     			'success' => 'Votre compte a bien été enregistré. Vous pouvez vous connecter.',
+	    		'modes'      => $this->modes,
+	    		'difficulties' => $this->difficulties,
     	));
     	}
     	
@@ -96,16 +124,18 @@ class UserController extends Controller
     			'errorRegister'         => $error,
     			'form' => $form->createView(),
     			'success' => '',
+	    		'modes'      => $this->modes,
+	    		'difficulties' => $this->difficulties,
     	));
     	
     }
     
     public function editAction()
     {    	
+    	$this->loadData();
     	if( $this->get('security.context')->isGranted('IS_AUTHENTICATED_FULLY') ){
     		$userId = $this->get('security.context')->getToken()->getUser()->getId();
-    		$em = $this->getDoctrine()->getEntityManager();
-			$user = $em->getRepository('MGMemoryGameBundle:HumanPlayer')->find($userId);
+			$user = $this->manager->getRepository('MGMemoryGameBundle:HumanPlayer')->find($userId);
 			
 			if (!$user){
 				throw $this->createNotFoundException('Impossible de trouver ce joueur.');
@@ -118,19 +148,28 @@ class UserController extends Controller
     				'user'      => $user,
     				'edit_form'   => $editForm->createView(),
     				'delete_form' => $deleteForm->createView(),
+	    			'modes'      => $this->modes,
+	    			'difficulties' => $this->difficulties,
     		));    		
     	}else{
-    		return $this->redirect($this->generateUrl('mg_memory_game_homepage'));    		
+    		$flashBag = $this->get('session')->getFlashBag();
+    		$flashBag->get('notice');
+    		$flashBag->set('notice', "Vous devez être connecté pour consulter cette page.");
+	    	
+	    	return $this->render('MGMemoryGameBundle:Default:index.html.twig', array(
+	    			'modes'      => $this->modes,
+	    			'difficulties' => $this->difficulties,
+	    	));  		
     	}   	
     }
     
     public function updateAction()
     {
+    	$this->loadData();
     	if( $this->get('security.context')->isGranted('IS_AUTHENTICATED_FULLY') ){
 	    	$request = $this->getRequest();
 	    	$userId = $this->get('security.context')->getToken()->getUser()->getId();
-	    	$em = $this->getDoctrine()->getEntityManager();
-			$user = $em->getRepository('MGMemoryGameBundle:HumanPlayer')->find($userId);
+			$user = $this->manager->getRepository('MGMemoryGameBundle:HumanPlayer')->find($userId);
 	    
 	    	if (!$user) {
 	    		throw $this->createNotFoundException('Impossible de trouver ce joueur.');
@@ -159,13 +198,15 @@ class UserController extends Controller
 	    						'user'      => $user,
 	    						'edit_form'   => $editForm->createView(),
 	    						'delete_form' => $deleteForm->createView(),
+	    						'modes'      => $this->modes,
+	    						'difficulties' => $this->difficulties,
 	    				
 	    				));
 	    			}else{	    	
 	    				// Update user in DataBase		
 		    			$user->setPassword($newPasswordEncoded);
-		    			$em->persist($user);
-		    			$em->flush();
+		    			$this->manager->persist($user);
+		    			$this->manager->flush();
 		    			
 		    			$flashBag = $this->get('session')->getFlashBag();
 		    			$flashBag->get('notice'); // gets message and clears type
@@ -180,6 +221,8 @@ class UserController extends Controller
 	    					'user'      => $user,
 	    					'edit_form'   => $editForm->createView(),
 	    					'delete_form' => $deleteForm->createView(),
+	    					'modes'      => $this->modes,
+	    					'difficulties' => $this->difficulties,
 	    					
 	    			));
 	    		}    		
@@ -189,19 +232,28 @@ class UserController extends Controller
 	    			'user'      => $user,
 	    			'edit_form'   => $editForm->createView(),
 	    			'delete_form' => $deleteForm->createView(),
+	    			'modes'      => $this->modes,
+	    			'difficulties' => $this->difficulties,
 	    	));
 	    }else{
-	    	return $this->redirect($this->generateUrl('mg_memory_game_homepage'));
+    		$flashBag = $this->get('session')->getFlashBag();
+    		$flashBag->get('notice');
+    		$flashBag->set('notice', "Vous devez être connecté pour consulter cette page.");
+	    	
+	    	return $this->render('MGMemoryGameBundle:Default:index.html.twig', array(
+	    			'modes'      => $this->modes,
+	    			'difficulties' => $this->difficulties,
+	    	));
 	    }
     }
         
     public function deleteAction()
     {
+    	$this->loadData();
     	if( $this->get('security.context')->isGranted('IS_AUTHENTICATED_FULLY') ){	
 	    	$request = $this->getRequest();
 	    	$userId = $this->get('security.context')->getToken()->getUser()->getId();
-	    	$em = $this->getDoctrine()->getEntityManager();
-	    	$user = $em->getRepository('MGMemoryGameBundle:HumanPlayer')->find($userId);
+	    	$user = $this->manager->getRepository('MGMemoryGameBundle:HumanPlayer')->find($userId);
 	    	
 	    	if (!$user) {
 	    		throw $this->createNotFoundException('Impossible de trouver ce joueur.');
@@ -221,16 +273,19 @@ class UserController extends Controller
 	    		$currentPasswordEncoded = $encoder->encodePassword($currentPassword, $user->getSalt());
 	    		
 	    		if($currentPasswordEncoded === $oldPassword){
-	    			$em->remove($user);
-	    			$em->flush();
+	    			$this->manager->remove($user);
+	    			$this->manager->flush();
 
 	    			$this->get('security.context')->setToken(null);
 
 	    			$flashBag = $this->get('session')->getFlashBag();
 	    			$flashBag->get('notice'); // gets message and clears type
 	    			$flashBag->set('notice', "Votre compte a bien été supprimé.");
-	    			
-	    			return $this->redirect($this->generateUrl('mg_memory_game_homepage'));
+	    			 
+	    			return $this->render('MGMemoryGameBundle:Default:index.html.twig', array(
+	    					'modes'      => $this->modes,
+	    					'difficulties' => $this->difficulties,
+	    			));
 	    		}else{
 	    			$deleteForm->get('currentpassword')->addError(new FormError('Votre ancien mot de passe n\'est pas valide.'));
 	    		}			
@@ -240,16 +295,25 @@ class UserController extends Controller
 	    			'user'      => $user,
 	    			'edit_form'   => $editForm->createView(),
 	    			'delete_form' => $deleteForm->createView(),
+	    			'modes'      => $this->modes,
+	    			'difficulties' => $this->difficulties,
 	    			 
 	    	));	    	
 	    }else{
-	    	return $this->redirect($this->generateUrl('mg_memory_game_homepage'));
+	    	$flashBag = $this->get('session')->getFlashBag();
+	    	$flashBag->get('notice');
+	    	$flashBag->set('notice', "Vous devez être connecté pour consulter cette page.");
+	    	
+	    	return $this->render('MGMemoryGameBundle:Default:index.html.twig', array(
+	    			'modes'      => $this->modes,
+	    			'difficulties' => $this->difficulties,
+	    	));
 	    }
     }
     
     private function createDeleteForm($userId)
     {
-    	return $this->createFormBuilder(array('user_id' => $userId))
+    	return $this->createFormBuilder(array('user_id' => $userId, 'modes' => $this->modes, 'difficulties' => $this->difficulties,))
     	->add('user_id', 'hidden')
     	->add('currentpassword', 'password', array(
         				'mapped'		  => false
@@ -257,4 +321,35 @@ class UserController extends Controller
     	->getForm()
     	;
     }
+    
+    public function listGamesAction()
+    {
+    	$this->loadData();
+    	if( $this->get('security.context')->isGranted('IS_AUTHENTICATED_FULLY') ){
+	    	$player = $this->get('security.context')->getToken()->getUser();
+	    	$games = $this->manager->getRepository('MGMemoryGameBundle:Result')->getResultsGamesByUserId($player, null, 10);
+	    	
+	    	if (!$games) {
+	    		$flashBag = $this->get('session')->getFlashBag();
+		    	$flashBag->get('notice'); // gets message and clears type
+		    	$flashBag->set('notice', "Vous n'avez pas encore de scores.");
+	    	}
+	    	    	
+	    	return $this->render('MGMemoryGameBundle:User:scores.html.twig', array(
+	    			'games'      => $games,
+	    			'modes'      => $this->modes,
+		    		'difficulties' => $this->difficulties,
+	    	));
+	    } else {
+	    		$flashBag = $this->get('session')->getFlashBag();
+	    		$flashBag->get('notice');
+	    		$flashBag->set('notice', "Vous devez être connecté pour consulter cette page.");
+		    	
+		    	return $this->render('MGMemoryGameBundle:Default:index.html.twig', array(
+		    			'modes'      => $this->modes,
+		    			'difficulties' => $this->difficulties,
+		    	));
+    	}
+	}
+
 }

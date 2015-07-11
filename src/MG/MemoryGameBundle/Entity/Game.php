@@ -46,8 +46,8 @@ class Game{
 	/**
 	 * Game Difficulty
 	 * 
- 	 * @ORM\ManyToOne(targetEntity="MG\MemoryGameBundle\Entity\Difficulty", inversedBy="$games")
-     * @ORM\JoinColumn(name="difficulty_id", referencedColumnName="id")
+ 	 * @ORM\ManyToOne(targetEntity="MG\MemoryGameBundle\Entity\Difficulty")
+     * @ORM\JoinColumn(name="difficulty_id", referencedColumnName="id", nullable=false)
 	 * @var \MG\MemoryGameBundle\Entity\Difficulty
 	 */
 	private $difficulty;
@@ -55,8 +55,8 @@ class Game{
 	/**
 	 * Game Mode
 	 *
-	 * @ORM\ManyToOne(targetEntity="MG\MemoryGameBundle\Entity\Mode", inversedBy="$games")
-	 * @ORM\JoinColumn(name="mode_id", referencedColumnName="id")
+	 * @ORM\ManyToOne(targetEntity="MG\MemoryGameBundle\Entity\Mode")
+	 * @ORM\JoinColumn(name="mode_id", referencedColumnName="id", nullable=false)
 	 * @var \MG\MemoryGameBundle\Entity\Mode
 	 */
 	private $mode;

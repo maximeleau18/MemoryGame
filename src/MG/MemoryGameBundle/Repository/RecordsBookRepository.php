@@ -12,4 +12,56 @@ use Doctrine\ORM\EntityRepository;
  */
 class RecordsBookRepository extends EntityRepository
 {
+	public function getRecordsBookByMode($mode = null, $offset = null, $max = null)
+	{
+		$qb = $this->createQueryBuilder('rb')
+		->where('m = :mode')
+		->setParameter('mode', $mode)
+		->addOrderBy('rb.time', 'ASC');
+	
+		if($max) {
+			$qb->setMaxResults($max);
+		}
+	
+		if($offset) {
+			$qb->setFirstResult($offset);
+		}
+	
+		if($mode) {
+			$qb->join('rb.mode', 'm')
+			->addSelect('m')
+			->join('rb.difficulty', 'd')
+			->addSelect('d')
+			;
+		}
+	
+		$query = $qb->getQuery();
+	
+		return $query->getResult();
+	}
+	
+	public function findAllRecordsOrderedByMode($offset = null, $max = null)
+	{
+		$qb = $this->createQueryBuilder('rb')
+		->addOrderBy('rb.time', 'ASC');
+		
+		if($max) {
+			$qb->setMaxResults($max);
+		}
+		
+		if($offset) {
+			$qb->setFirstResult($offset);
+		}
+
+		$qb->join('rb.mode', 'm')
+		->addSelect('m')
+		->join('rb.difficulty', 'd')
+		->addSelect('d')
+		;
+		
+		$query = $qb->getQuery();
+		
+		return $query->getResult();
+	}
+
 }

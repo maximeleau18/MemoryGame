@@ -1,0 +1,43 @@
+
+{% extends 'MGMemoryGameBundle::layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+	<link rel="stylesheet" href="{{ asset('bundles/mgmemorygame/css/records.css') }}" type="text/css" />
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+{% endblock %}
+
+{% block content %}	
+		<!--  Flash Bag Message -->
+		{% for flashMessage in app.session.flashbag.get('notice') %}
+			<div class="flash_notice">
+				<div id="flash_content">
+					{{ flashMessage }}
+				</div>
+		    </div>
+		{% endfor %}	
+		<!--  End Flash Bag Message -->
+		<div id="content">
+			<table id="tab_records" cellpadding='0' cellpscing='0'>
+				<tr>
+					<th>Réalisé Le</th>
+					<th>Temps</th>
+					<th>Joueur</th>
+					<th>Difficulté</th>
+					<th>Mode</th>					
+				</tr>
+				{% for entity in records %}
+			        <tr>
+			            <td>{{ entity.insertedAt|date('d-m-Y H:i:s') }}</td>
+			            <td>{{ entity.time }}</td>
+			            <td>{{ entity.player.username }}</td>
+			            <td>{{ entity.difficulty.label }}</td>
+			            <td>{{ entity.mode.label }}</td>
+			        </tr>
+			    {% endfor %}
+			</table>
+		</div>
+{% endblock %}

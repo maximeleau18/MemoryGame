@@ -29,33 +29,25 @@ class RecordsBook{
 	 * RecordsBook Unique ID.
 	 * 
 	 * @ORM\Id
-	 * @ORM\Column(type="smallint")
-	 * @ORM\GeneratedValue(strategy="IDENTITY")
+	 * @ORM\Column(type="integer")
+	 * @ORM\GeneratedValue(strategy="AUTO")
 	 * @var integer
 	 */
 	private $id;
 	
 	/**
-	 * RecordsBook Player username
-	 * 
-	 * @ORM\Column(type="string", length=150, nullable=false)
-	 * @Assert\NotBlank(
-	 * 		message = "Vous devez renseigner un pseudonyme."
-	 * )
-	 * @Assert\Length(
-	 *      min = "3",
-	 *      max = "50",
-	 *      minMessage = "Le pseudonyme doit faire au moins {{ limit }} caractères.",
-	 *      maxMessage = "Le pseudonyme ne peut pas être plus long que {{ limit }} caractères."
-	 * )
-	 * @var string
+	 * RecordsBook HumanPlayer
+	 *
+	 * @ORM\ManyToOne(targetEntity="MG\MemoryGameBundle\Entity\HumanPlayer", inversedBy="recordsBooks")
+	 * @ORM\JoinColumn(name="human_player_id" , referencedColumnName="id" , nullable=false, onDelete="CASCADE")
+	 * @var \MG\MemoryGameBundle\Entity\HumanPlayer
 	 */
-	private $playerUsername;
+	private $player;
 	
 	/**
 	 * RecordsBook Realized time
 	 * 
-	 * @ORM\Column(type="float", nullable=false, columnDefinition="float unsigned")
+	 * @ORM\Column(type="float", nullable=false, columnDefinition="float unsigned not null")
 	 * @Assert\NotBlank(
 	 * 		message = "Vous devez renseigner le temps réalisé."
 	 * )
@@ -70,6 +62,24 @@ class RecordsBook{
 	 * @var \DateTime
 	 */
 	private $insertedAt;
+		
+	/**
+	 * RecordsBook Difficulty
+	 *
+	 * @ORM\ManyToOne(targetEntity="MG\MemoryGameBundle\Entity\Difficulty")
+	 * @ORM\JoinColumn(name="difficulty_id", referencedColumnName="id", nullable=false)
+	 * @var \MG\MemoryGameBundle\Entity\Difficulty
+	 */
+	private $difficulty;
+	
+	/**
+	 *  RecordsBook Mode
+	 *
+	 * @ORM\ManyToOne(targetEntity="MG\MemoryGameBundle\Entity\Mode")
+	 * @ORM\JoinColumn(name="mode_id", referencedColumnName="id", nullable=false)
+	 * @var \MG\MemoryGameBundle\Entity\Mode
+	 */
+	private $mode;
 	
 	/**
 	 * Get ID
@@ -91,21 +101,23 @@ class RecordsBook{
 	}
 	
 	/**
-	 * Get Player username
+	 * Get Player
 	 * 
-	 * @return The Player username
+	 * @return \MG\MemoryGameBundle\Entity\HumanPlayer
 	 */
-	public function getPlayerUsername() {
-		return $this->playerUsername;
+	public function getPlayer() {
+		return $this->player;
 	}
 	
 	/**
-	 * Set Player username
+	 * Set Player
 	 * 
-	 * @param $playerUsername
+	 * @param \MG\MemoryGameBundle\Entity\HumanPlayer $player
+     * @return RecordsBook
 	 */
-	public function setPlayerUsername($playerUsername) {
-		$this->playerUsername = $playerUsername;
+	public function setPlayer($player) {
+		$this->player = $player;
+		
 		return $this;
 	}
 	
@@ -147,4 +159,49 @@ class RecordsBook{
 		return $this;
 	}	
 	
+	/**
+	 * Get Difficulty
+	 *
+	 * @return \MG\MemoryGameBundle\Entity\Difficulty
+	 */
+	public function getDifficulty()
+	{
+		return $this->difficulty;
+	}
+	
+	/**
+     * Set Difficulty
+     *
+     * @param \MG\MemoryGameBundle\Entity\Difficulty $difficulty
+     * @return RecordsBook
+     */
+    public function setDifficulty(\MG\MemoryGameBundle\Entity\Difficulty $difficulty = null)
+    {
+        $this->difficulty = $difficulty;
+
+        return $this;
+    }
+    
+    /**
+     * Get mode
+     *
+     * @return \MG\MemoryGameBundle\Entity\Mode
+     */
+    public function getMode()
+    {
+    	return $this->mode;
+    }
+
+	/**
+     * Set mode
+     *
+     * @param \MG\MemoryGameBundle\Entity\Mode $mode
+     * @return RecordsBook
+     */
+    public function setMode(\MG\MemoryGameBundle\Entity\Mode $mode = null)
+    {
+        $this->mode = $mode;
+
+        return $this;
+    }
 }
