@@ -45,3 +45,19 @@ records_mode_show:
 records_all_show:
     pattern:  /records
     defaults: { _controller: "MGMemoryGameBundle:RecordsBook:listAllRecords" }
+# The route to select a new game
+new_game:
+    pattern: /newgame/{modeId}
+    defaults: { _controller: "MGMemoryGameBundle:Game:newGame" }
+    requirements:
+        modeId:  \d+
+# The route to launch game choisen
+launch_game:
+    pattern:  /launchgame/{modeId}
+    defaults: { _controller: "MGMemoryGameBundle:Game:launchGame" }
+    requirements:
+        modeId:  \d+
+# The route to check the card
+check_card:
+    pattern:  /checkcard
+    defaults: { _controller: "MGMemoryGameBundle:Game:checkCard" }

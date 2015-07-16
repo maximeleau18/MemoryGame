@@ -86,15 +86,7 @@ class Difficulty{
 	 * @var float
 	 */
 	private $timer;
-		
-	/**
-	 * Constructor
-	 */
-	public function __construct()
-	{
-		$this->games = new \Doctrine\Common\Collections\ArrayCollection();
-	}
-	
+			
 	/**
 	 * Get Difficulty ID
 	 * 

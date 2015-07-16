@@ -20,24 +20,34 @@
 		    </div>
 		{% endfor %}	
 		<!--  End Flash Bag Message -->
-		<div id="content">
-			<table id="tab_records" cellpadding='0' cellpscing='0'>
-				<tr>
-					<th>Réalisé Le</th>
-					<th>Temps</th>
-					<th>Joueur</th>
-					<th>Difficulté</th>
-					<th>Mode</th>					
-				</tr>
-				{% for entity in records %}
-			        <tr>
-			            <td>{{ entity.insertedAt|date('d-m-Y H:i:s') }}</td>
-			            <td>{{ entity.time }}</td>
-			            <td>{{ entity.player.username }}</td>
-			            <td>{{ entity.difficulty.label }}</td>
-			            <td>{{ entity.mode.label }}</td>
-			        </tr>
-			    {% endfor %}
-			</table>
-		</div>
+		{% if records is not empty %}
+			<div id="content">
+				<table id="tab_records" cellpadding='0' cellpscing='0'>
+					<tr>
+						<th>Réalisé Le</th>
+						<th>Temps</th>
+						<th>Joueur</th>
+						<th>Difficulté</th>
+						<th>Mode</th>					
+					</tr>
+					{% for entity in records %}
+						{% if loop.index == 1 %}				
+					        <tr class="one">
+					    {% endif %}
+					    {% if loop.index == 2 %}			
+					    	<tr class="second">				    	
+					    {% endif %}
+					    {% if loop.index == 3 %}			
+					    	<tr class="third">
+					    {% endif %}
+				            <td>{{ entity.insertedAt|date('d-m-Y H:i:s') }}</td>
+				            <td>{{ entity.time }}</td>
+				            <td>{{ entity.player.username }}</td>
+				            <td>{{ entity.difficulty.label }}</td>
+				            <td>{{ entity.mode.label }}</td>
+				        </tr>
+				    {% endfor %}
+				</table>
+			</div>
+		{% endif %}
 {% endblock %}

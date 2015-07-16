@@ -53,7 +53,7 @@
           <li><a><span>Jouer</span></a>
             <ul class="sub-menu">
             {% for m in modes %}
-              <li><a href="#" title="Nouvelle partie {{ m.label }}">Nouvelle partie - {{ m.label }} -</a></li>
+              <li><a href="{{ path('new_game', { 'modeId': m.id }) }}" title="Nouvelle partie {{ m.label }}">Nouvelle partie - {{ m.label }} -</a></li>
             {% endfor %}
             </ul>
           </li>

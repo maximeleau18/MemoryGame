@@ -1,0 +1,61 @@
+{% extends 'MGMemoryGameBundle::layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+	<link rel="stylesheet" href="{{ asset('bundles/mgmemorygame/css/my_game.css') }}" type="text/css" />
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+{% endblock %}
+
+{% block content %}	
+		<!--  Flash Bag Message -->
+		{% for flashMessage in app.session.flashbag.get('notice') %}
+			<div class="flash_notice">
+				<div id="flash_content">
+					{{ flashMessage }}
+				</div>
+		    </div>
+		{% endfor %}	
+		<!--  End Flash Bag Message -->
+		<div id="content">
+			{% if app.session.get('mode_choisen') is not empty %}
+				{% if app.session.get('difficulty_choisen') is not empty %}
+					<h1>Mode {{ app.session.get('mode_choisen').label }} -- Difficulté {{ app.session.get('difficulty_choisen').label }}</h1>
+				{% endif %}
+			{% endif %}
+			<div id="tab_content">
+				<table id="tab_cards" cellpadding="0" cellspacing="0">
+					<tr>
+						{% for tr in app.session.get('game_tab') %}			
+							{% for td in tr %}
+								<td>
+								{% if td.locked %}
+									<img src="{{ asset('bundles/mgmemorygame/images/') }}{{ td.imgName }}.jpg" alt="" />
+								{% else %}
+									{% if td.visible %}
+										<form action="{{ path('check_card') }}" method="post">
+											<input type="hidden" name="idCard" value="{{ td.id }}" />
+											<button class="card_button" type="submit">
+												<img src="{{ asset('bundles/mgmemorygame/images/') }}{{ td.imgName }}.jpg" alt="" />
+											</button>
+										</form>
+									{% else %}
+										<form action="{{ path('check_card') }}" method="post">
+											<input type="hidden" name="idCard" value="{{ td.id }}" />
+											<button class="card_button" type="submit">
+												<img src="{{ asset('bundles/mgmemorygame/images/hidden.gif') }}" alt="" />
+											</button>
+										</form>
+									{% endif %}
+								{% endif %}
+								</td>			
+							{% endfor %}
+							</tr>
+						{% endfor %}
+					</tr>				
+				</table>
+			</div>
+		</div>
+{% endblock %}

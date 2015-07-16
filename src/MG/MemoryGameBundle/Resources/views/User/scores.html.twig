@@ -20,40 +20,42 @@
 		    </div>
 		{% endfor %}	
 		<!--  End Flash Bag Message -->
-		<div id="content">
-			<table id="tab_scores" cellpadding='0' cellpscing='0'>
-				<tr>
-					<th>Réalisé Le</th>
-					<th>Temps</th>
-					<th>Vainqueur ?</th>
-					<th>Classement</th>
-					<th>Difficulté</th>
-					<th>Mode</th>					
-				</tr>
-				{% for entity in games %}
-					{% if loop.index == 1 %}				
-				        <tr class="one">
-				    {% endif %}
-				    {% if loop.index == 2 %}			
-				    	<tr class="second">				    	
-				    {% endif %}
-				    {% if loop.index == 3 %}			
-				    	<tr class="third">
-				    {% endif %}
-				            <td>{{ entity.game.playedAt|date('d-m-Y H:i:s') }}</td>
-				            <td>{{ entity.time }}</td>
-				            <td>
-				            {% if entity.isWinner == 1 %}		
-				            	Oui
-				            {% else %}
-				            	Non
-				            {% endif %}				
-							</td>
-				            <td>{{ entity.rank }}</td>
-				            <td>{{ entity.game.difficulty.label }}</td>
-				            <td>{{ entity.game.mode.label }}</td>
-				        </tr>
-			    {% endfor %}
-			</table>
-		</div>
+		{% if games is not empty %}
+			<div id="content">
+				<table id="tab_scores" cellpadding='0' cellpscing='0'>
+					<tr>
+						<th>Réalisé Le</th>
+						<th>Temps</th>
+						<th>Vainqueur ?</th>
+						<th>Classement</th>
+						<th>Difficulté</th>
+						<th>Mode</th>					
+					</tr>
+					{% for entity in games %}
+						{% if loop.index == 1 %}				
+					        <tr class="one">
+					    {% endif %}
+					    {% if loop.index == 2 %}			
+					    	<tr class="second">				    	
+					    {% endif %}
+					    {% if loop.index == 3 %}			
+					    	<tr class="third">
+					    {% endif %}
+					            <td>{{ entity.game.playedAt|date('d-m-Y H:i:s') }}</td>
+					            <td>{{ entity.time }}</td>
+					            <td>
+					            {% if entity.isWinner == 1 %}		
+					            	Oui
+					            {% else %}
+					            	Non
+					            {% endif %}				
+								</td>
+					            <td>{{ entity.rank }}</td>
+					            <td>{{ entity.game.difficulty.label }}</td>
+					            <td>{{ entity.game.mode.label }}</td>
+					        </tr>
+				    {% endfor %}
+				</table>
+			</div>
+		{% endif %}
 {% endblock %}

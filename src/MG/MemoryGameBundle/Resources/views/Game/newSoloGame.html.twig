@@ -1,0 +1,42 @@
+
+{% extends 'MGMemoryGameBundle::layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+	<link rel="stylesheet" href="{{ asset('bundles/mgmemorygame/css/solo_game.css') }}" type="text/css" />
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+{% endblock %}
+
+{% block content %}	
+		<!--  Flash Bag Message -->
+		{% for flashMessage in app.session.flashbag.get('notice') %}
+			<div class="flash_notice">
+				<div id="flash_content">
+					{{ flashMessage }}
+				</div>
+		    </div>
+		{% endfor %}	
+		<!--  End Flash Bag Message -->
+		<div id="content">
+			{% if difficulties is not empty %}
+				{% if form_errors(difficulty_form) %}
+					{{ form_errors(difficulty_form) }}
+				{% endif %}
+				<div id="difficulty_form">
+				    <form action="{{ path('launch_game', { 'modeId': choisen_mode.id } ) }}" method="post" {{ form_enctype(difficulty_form) }}>
+						<h1>Choisissez la difficulté du jeu</h1>
+						<label id="lblDifficulty" for="">Difficulté :</label>			    
+						<div class="errors">    
+							{{ form_errors(difficulty_form.label) }}
+						</div>
+				        {{ form_widget(difficulty_form.label, {'attr': {'class': 'cb_difficulty'}}) }}
+						<button type="sumbit">Valider</button>
+						{{ form_widget(difficulty_form._token) }}
+					</form>
+				</div>		
+			{% endif %}
+		</div>
+{% endblock %}

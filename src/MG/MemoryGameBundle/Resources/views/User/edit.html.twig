@@ -22,7 +22,7 @@
 		<div id="content">
 			<div id="editForm">
 				{% if form_errors(edit_form) %}
-					form_errors(edit_form)
+					{{ form_errors(edit_form) }}
 				{% endif %}
 			    <h1>Editez votre profil</h1>
 			    <form action="{{ path('user_update') }}" method="post" {{ form_enctype(edit_form) }}>
@@ -62,7 +62,7 @@
 			</div>
 			<div id="deleteForm">
 				{% if form_errors(delete_form) %}
-					form_errors(delete_form)
+					{{ form_errors(delete_form) }}
 				{% endif %}
 				<h1>Supprimer votre compte</h1>
 				<form action="{{ path('user_delete') }}" method="post" {{ form_enctype(delete_form) }}>
