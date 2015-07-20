@@ -61,3 +61,17 @@ launch_game:
 check_card:
     pattern:  /checkcard
     defaults: { _controller: "MGMemoryGameBundle:Game:checkCard" }
+    options:
+        expose: true
+# The route to start the game
+start_game:
+    pattern:  /startgame
+    defaults: { _controller: "MGMemoryGameBundle:Game:startGame" } 
+    options:
+        expose: true
+# The route to stop the game
+stop_game:
+    pattern:  /stopgame
+    defaults: { _controller: "MGMemoryGameBundle:Game:stopGame" }
+    options:
+        expose: true

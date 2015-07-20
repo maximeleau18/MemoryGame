@@ -1,0 +1,36 @@
+<div id="myGameBoard">
+
+{% if app.session.get('go_to_homepage') is not empty %}
+	<script>
+		var url = Routing.generate('mg_memory_game_homepage');
+	    top.location.replace(url);
+	</script>
+{% endif %}
+{% if app.session.get('game_started') is not empty %}
+	<table id="tab_cards" cellpadding="0" cellspacing="0">	
+		<tr>
+			{% for tr in app.session.get('game_tab') %}			
+				{% for td in tr %}
+					<td>
+					{% if td.locked %}
+						<img src="{{ asset('bundles/mgmemorygame/images/') }}{{ td.imgName }}.png" alt="" />
+					{% else %}
+						{% if td.visible %}
+								<button class="card_button" onclick="checkCard({{ td.id }})">
+									<img src="{{ asset('bundles/mgmemorygame/images/') }}{{ td.imgName }}.png" alt="" />
+								</button>
+						{% else %}
+								<button class="card_button" onclick="checkCard({{ td.id }})">
+									<img src="{{ asset('bundles/mgmemorygame/images/hidden_2.gif') }}" alt="" />
+								</button>
+						{% endif %}
+					{% endif %}
+					</td>			
+				{% endfor %}
+				</tr>
+			{% endfor %}
+		</tr>				
+	</table>
+{% endif %}
+
+</div>

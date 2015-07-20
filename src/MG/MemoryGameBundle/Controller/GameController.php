@@ -11,6 +11,9 @@ use MG\MemoryGameBundle\Entity\GameEntity\State;
 use MG\MemoryGameBundle\Entity\GameEntity\Board;
 use MG\MemoryGameBundle\Entity\GameEntity\Card;
 use MG\MemoryGameBundle\Entity\GameEntity\CoupleCards;
+use Symfony\Component\HttpFoundation\Response;
+use MG\MemoryGameBundle\Entity\Result;
+use MG\MemoryGameBundle\Entity\ComputerPlayer;
 
 class GameController extends Controller
 {
@@ -59,6 +62,60 @@ class GameController extends Controller
     	));
     }
 
+    public function stopGameAction()
+    {
+       	$this->loadData();
+    	$flashBag = $this->get('session')->getFlashBag();
+     	$flashBag->get('notice');
+    	$flashBag->set('notice', "Vous avez arrêté le jeu. Celui-ci n'est donc pas sauvegardé.");
+    	
+    	$request = $this->getRequest();
+    	$session = $request->getSession();
+    	$session->remove('game_started');
+    	
+    	return $this->render('MGMemoryGameBundle:Default:index.html.twig', array(
+    			'modes'      => $this->modes,
+    			'difficulties' => $this->difficulties,
+    	));
+	}
+
+	public function startGameAction()
+	{
+		$this->loadData();
+    	$request = $this->getRequest();
+		$session = $request->getSession();
+		
+		// If player is authenticated
+		if ($this->get('security.context')->isGranted('IS_AUTHENTICATED_FULLY')){
+			$difficulty = $this->manager->getRepository('MGMemoryGameBundle:Difficulty')->find($session->get('difficulty_choisen')->getId());
+			$mode = $this->manager->getRepository('MGMemoryGameBundle:Mode')->find($session->get('mode_choisen')->getId());
+			
+			if (!$mode) {
+				throw $this->createNotFoundException('Aucun mode de jeu portant cet id trouvé.');
+			}
+			if (!$difficulty) {
+				throw $this->createNotFoundException('Aucune difficulté de jeu portant cet id trouvé.');
+			}
+			
+			$game = new Game();
+			$game->setDifficulty($difficulty);
+			$game->setMode($mode);
+			$game->setPlayedAt(new \DateTime());
+			
+			
+			// We store the game in session	
+			$session->set('game', $game);
+		}
+		
+		$session->set('game_started', true);
+		
+		 
+		return $this->render('MGMemoryGameBundle:Game:tabGame.html.twig', array(
+				'modes'      => $this->modes,
+				'difficulties' => $this->difficulties,
+		));
+	}
+	
     public function launchGameAction($modeId)
     {
     	 $this->loadData();
@@ -141,7 +198,7 @@ class GameController extends Controller
     	   	
     	$session->set('game_tab', $tab);
     	$session->set('difficulty_choisen', $difficulty);
-    	$session->set('mode_choisen', $mode);
+    	$session->set('mode_choisen', $mode); 	
     	
     	return $this->render('MGMemoryGameBundle:Game:myGame.html.twig', array(
     			'modes'      => $this->modes,
@@ -155,91 +212,245 @@ class GameController extends Controller
     	 $request = $this->getRequest();
     	 $session = $request->getSession();
     	 
-    	 $cardId = $request->get('idCard');
-    	 $board = $session->get('game_tab');    	 
-    	 $selectedCard = $this->getCardById($board, $cardId);
-    	 
-    	 for($i = 1; $i <= count($board); $i++){
-    	 	for ($j = 1; $j <= count($board[1]); $j++){
-    	 		$currentCard = $board[$i][$j];
-    	 		if ($currentCard->getLocked() == false){
-    	 			if ($selectedCard->getVisible()){
-    	 				if ($currentCard->getVisible()){
-    	 					if ($currentCard->getId() !== $selectedCard->getId()){
-    	 						if ($currentCard->getCoupleCards()->getId() === $selectedCard->getCoupleCards()->getId()){
-    	 							$selectedCard->setVisible(true);
-    	 							$currentCard->setLocked(true);
-    	 							$selectedCard->setLocked(true);
-    	 							$session->set('game_tab', $board);
-    	 							 
-    	 							return $this->render('MGMemoryGameBundle:Game:myGame.html.twig', array(
-    	 									'modes'      => $this->modes,
-    	 									'difficulties' => $this->difficulties,
-    	 							));
-    	 						} else{
-    	 							$currentCard->setVisible(false);
-    	 							$selectedCard->setVisible(true);
-    	 							$session->set('game_tab', $board);
-    	 					
-    	 							return $this->render('MGMemoryGameBundle:Game:myGame.html.twig', array(
-    	 									'modes'      => $this->modes,
-    	 									'difficulties' => $this->difficulties,
-    	 							));
-    	 						}
-    	 					}else{
-    	 						$selectedCard->setVisible(true);
-    	 						$session->set('game_tab', $board);
-    	 						 
-    	 						return $this->render('MGMemoryGameBundle:Game:myGame.html.twig', array(
-    	 								'modes'      => $this->modes,
-    	 								'difficulties' => $this->difficulties,
-    	 						));
-    	 					}
-    	 				}else{
-    	 					if($currentCard->getId() === $selectedCard->getId()){
-    	 						$session->set('game_tab', $board);
-    	 							
-    	 						return $this->render('MGMemoryGameBundle:Game:myGame.html.twig', array(
-    	 								'modes'      => $this->modes,
-    	 								'difficulties' => $this->difficulties,
-    	 						));
-    	 					}
-    	 				}
-    	 			}else{
-    	 				if ($currentCard->getVisible()){
-    	 					if ($currentCard->getCoupleCards()->getId() === $selectedCard->getCoupleCards()->getId()){
-    	 						$selectedCard->setVisible(true);
-    	 						$currentCard->setLocked(true);
-    	 						$selectedCard->setLocked(true);
-    	 						$session->set('game_tab', $board);
-    	 				
-    	 						return $this->render('MGMemoryGameBundle:Game:myGame.html.twig', array(
-    	 								'modes'      => $this->modes,
-    	 								'difficulties' => $this->difficulties,
-    	 						));
-    	 					} else{
-    	 						$currentCard->setVisible(false);
-    	 						$selectedCard->setVisible(true);
-    	 						$session->set('game_tab', $board);
-    	 							
-    	 						return $this->render('MGMemoryGameBundle:Game:myGame.html.twig', array(
-    	 								'modes'      => $this->modes,
-    	 								'difficulties' => $this->difficulties,
-    	 						));
-    	 					}
-    	 				}   	 		
-    	 			}
-    	 		}
-    	 	}
+    	 if($request->isXmlHttpRequest()){
+	    	 $cardId = $request->request->get('idcard');
+	    	 $timer = $request->request->get('timer');
+	    	 $board = $session->get('game_tab');    	 
+	    	 $selectedCard = $this->getCardById($board, $cardId);
+
+	    	 for($i = 1; $i <= count($board); $i++){
+	    	 	for ($j = 1; $j <= count($board[1]); $j++){
+	    	 		$currentCard = $board[$i][$j];
+	    	 		if ($currentCard->getLocked() == false){
+	    	 			if ($selectedCard->getVisible()){
+	    	 				if ($currentCard->getVisible()){
+	    	 					if ($currentCard->getId() !== $selectedCard->getId()){
+	    	 						if ($currentCard->getCoupleCards()->getId() === $selectedCard->getCoupleCards()->getId()){
+	    	 							$selectedCard->setVisible(true);
+	    	 							$currentCard->setLocked(true);
+	    	 							$selectedCard->setLocked(true);
+	    	 							$session->set('game_tab', $board);
+	    	 							 
+	    	 							$this->checkEndGame($board, $timer);
+	    	 							
+	    	 							return $this->render('MGMemoryGameBundle:Game:boardGame.html.twig', array(
+	    	 									'modes'      => $this->modes,
+	    	 									'difficulties' => $this->difficulties,
+	    	 							));
+	    	 						} else{
+	    	 							$currentCard->setVisible(false);
+	    	 							$selectedCard->setVisible(true);
+	    	 							$session->set('game_tab', $board);
+	    	 					
+		    	 						if ($this->checkEndGame($board, $timer) == false){	    	 						
+			    	 						return $this->render('MGMemoryGameBundle:Game:boardGame.html.twig', array(
+			    	 								'modes'      => $this->modes,
+			    	 								'difficulties' => $this->difficulties,
+			    	 						));
+		    	 						}
+	    	 						}
+	    	 					}else{
+	    	 						$selectedCard->setVisible(true);
+	    	 						$session->set('game_tab', $board);
+
+	    	 						if ($this->checkEndGame($board, $timer) == false){	    	 						
+		    	 						return $this->render('MGMemoryGameBundle:Game:boardGame.html.twig', array(
+		    	 								'modes'      => $this->modes,
+		    	 								'difficulties' => $this->difficulties,
+		    	 						));
+	    	 						}
+	    	 					}
+	    	 				}else{
+	    	 					if($currentCard->getId() === $selectedCard->getId()){
+	    	 						$session->set('game_tab', $board);
+	    	 						
+	    	 						if ($this->checkEndGame($board, $timer) == false){	    	 						
+		    	 						return $this->render('MGMemoryGameBundle:Game:boardGame.html.twig', array(
+		    	 								'modes'      => $this->modes,
+		    	 								'difficulties' => $this->difficulties,
+		    	 						));
+	    	 						}
+	    	 					}
+	    	 				}
+	    	 			}else{
+	    	 				if ($currentCard->getVisible()){
+	    	 					if ($currentCard->getCoupleCards()->getId() === $selectedCard->getCoupleCards()->getId()){
+	    	 						$selectedCard->setVisible(true);
+	    	 						$currentCard->setLocked(true);
+	    	 						$selectedCard->setLocked(true);
+	    	 						$session->set('game_tab', $board);
+
+	    	 						if ($this->checkEndGame($board, $timer) == false){	    	 						
+		    	 						return $this->render('MGMemoryGameBundle:Game:boardGame.html.twig', array(
+		    	 								'modes'      => $this->modes,
+		    	 								'difficulties' => $this->difficulties,
+		    	 						));
+	    	 						}
+	    	 					} else{
+	    	 						$currentCard->setVisible(false);
+	    	 						$selectedCard->setVisible(true);
+	    	 						$session->set('game_tab', $board);
+
+	    	 						if ($this->checkEndGame($board, $timer) == false){	    	 						
+		    	 						return $this->render('MGMemoryGameBundle:Game:boardGame.html.twig', array(
+		    	 								'modes'      => $this->modes,
+		    	 								'difficulties' => $this->difficulties,
+		    	 						));
+	    	 						}
+	    	 					}
+	    	 				}   	 		
+	    	 			}
+	    	 		}
+	    	 	}
+	    	 }
+	    	
+	    	 $selectedCard->setVisible(true);
+	    	 $session->set('game_tab', $board);
+
+	    	 if ($this->checkEndGame($board, $timer) == false){	    	 						
+		    	return $this->render('MGMemoryGameBundle:Game:boardGame.html.twig', array(
+		    			'modes'      => $this->modes,
+		    	 		'difficulties' => $this->difficulties,
+		    	));
+	    	 }
     	 }
-    	
-    	 $selectedCard->setVisible(true);
-    	 $session->set('game_tab', $board);
     	 
-    	 return $this->render('MGMemoryGameBundle:Game:myGame.html.twig', array(
-    	 		'modes'      => $this->modes,
-    	 		'difficulties' => $this->difficulties,
-    	 ));
+    	 $session->set('go_to_homepage', true);
+    	 return $this->render('MGMemoryGameBundle:Game:boardGame.html.twig', array(
+		    	 		'modes'      => $this->modes,
+		    	 		'difficulties' => $this->difficulties,
+    	)); 	 
+    }
+    
+    public function checkEndGame($board, $timer){
+    	if (($this->countLockedCards($board) == (count($board[1]) * count($board[1]))) && ($timer > 0)){
+    		$this->saveWinnerResult($timer);
+    		return true;
+    	}else{
+    		if ($timer <= 0){
+    			$this->saveLooserResult($timer);
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
+    public function saveWinnerResult($timer)
+    {
+    	$this->loadData();
+    	$request = $this->getRequest();
+    	$session = $request->getSession();
+    	
+    	if ($this->get('security.context')->isGranted('IS_AUTHENTICATED_FULLY')){
+	    	$userId = $this->get('security.context')->getToken()->getUser()->getId();
+	    	$user = $this->manager->getRepository('MGMemoryGameBundle:HumanPlayer')->find($userId);
+	    	$computer = $this->manager->getRepository('MGMemoryGameBundle:Player')->find(1);
+	    	
+	    	if (!$user){
+	    		throw $this->createNotFoundException('Impossible de trouver ce joueur.');
+	    	}
+	    	
+	    	$game = $session->get('game');
+	    	if ($game){
+	    		$difficulty = $this->manager->getRepository('MGMemoryGameBundle:Difficulty')->find($game->getDifficulty()->getId());
+	    		$game->setDifficulty($difficulty);
+	    		 
+	    		$mode = $this->manager->getRepository('MGMemoryGameBundle:Mode')->find($game->getMode()->getId());
+	    		$game->setMode($mode);
+	    		 
+	    		$this->manager->persist($game);
+	    		$this->manager->flush();
+	    		
+	    		$result = New Result();
+	    		$result->setGame($game);
+	    		$result->setTime(new \DateTime());
+	    		$result->setPlayer($user);
+	    		$result->setIsWinner(true);
+	    		$result->setRank(1);
+	    		$result->setTime($timer);
+	    		
+	    		$this->manager->persist($result);
+	    		$this->manager->flush();   
+	
+	    		$result = New Result();
+	    		$result->setGame($game);
+	    		$result->setTime(new \DateTime());
+	    		$result->setPlayer($computer);
+	    		$result->setIsWinner(false);
+	    		$result->setRank(2);
+	    		$result->setTime(null);
+	    		
+	    		$this->manager->persist($result);
+	    		$this->manager->flush();    		
+	    		
+	    		$flashBag = $this->get('session')->getFlashBag();
+	    		$flashBag->get('notice');
+	    		$flashBag->set('notice', "Vous avez gagné ! Votre score est bien enregistré.");
+	    	}
+    	}
+    	
+    	$session->remove('game_started');
+    	 
+    	return $this->redirect($this->generateUrl('mg_memory_game_homepage'));
+    }
+    
+    public function saveLooserResult()
+    {
+    	$this->loadData();
+    	$request = $this->getRequest();
+    	$session = $request->getSession();
+
+    	if ($this->get('security.context')->isGranted('IS_AUTHENTICATED_FULLY')){
+	    	$userId = $this->get('security.context')->getToken()->getUser()->getId();
+	    	$user = $this->manager->getRepository('MGMemoryGameBundle:HumanPlayer')->find($userId);
+	    	$computer = $this->manager->getRepository('MGMemoryGameBundle:Player')->find(1);
+	    	
+	    	if (!$user){
+	    		throw $this->createNotFoundException('Impossible de trouver ce joueur.');
+	    	}
+	    		    	 
+	    	$game = $session->get('game');
+	    	if ($game){
+	    		$difficulty = $this->manager->getRepository('MGMemoryGameBundle:Difficulty')->find($game->getDifficulty()->getId());
+	    		$game->setDifficulty($difficulty);
+	    		
+	    		$mode = $this->manager->getRepository('MGMemoryGameBundle:Mode')->find($game->getMode()->getId());
+	    		$game->setMode($mode);
+	    		
+	    		$this->manager->persist($game);
+	    		$this->manager->flush();
+	    		
+	    		$result = New Result();
+	    		$result->setGame($game);
+	    		$result->setTime(new \DateTime());
+	    		$result->setPlayer($user);
+	    		$result->setIsWinner(false);
+	    		$result->setRank(2);
+	    		$result->setTime(null);
+	    		
+	    		$this->manager->persist($result);
+	    		$this->manager->flush();   
+	
+	    		$result = New Result();
+	    		$result->setGame($game);
+	    		$result->setTime(new \DateTime());
+	    		$result->setPlayer($computer);
+	    		$result->setIsWinner(true);
+	    		$result->setRank(1);
+	    		$result->setTime(null);
+	    		
+	    		$this->manager->persist($result);
+	    		$this->manager->flush();
+	    		
+	    		$flashBag = $this->get('session')->getFlashBag();
+	    		$flashBag->get('notice');
+	    		$flashBag->set('notice', "Vous avez perdu !");
+	    	}
+    	}
+    	 
+    	$session->remove('game_started');
+    	
+    	return $this->redirect($this->generateUrl('mg_memory_game_homepage'));    	
     }
     
     private function getCardById($tabCards, $cardId)
@@ -252,6 +463,19 @@ class GameController extends Controller
     		}
     	}
     	return null;
+	}
+	
+	private function countLockedCards($tabCards)
+	{
+		$nbCards = 0;
+		for($i = 1; $i <= count($tabCards); $i++){
+			for ($j = 1; $j <= count($tabCards[1]); $j++){
+				if ($tabCards[$i][$j]->getLocked()){
+					$nbCards++;
+				}
+			}
+		}
+		return $nbCards;
 	}
 
 }
