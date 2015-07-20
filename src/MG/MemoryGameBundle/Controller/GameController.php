@@ -387,6 +387,10 @@ class GameController extends Controller
 	    		$flashBag->get('notice');
 	    		$flashBag->set('notice', "Vous avez gagné ! Votre score est bien enregistré.");
 	    	}
+    	}else{
+    		$flashBag = $this->get('session')->getFlashBag();
+    		$flashBag->get('notice');
+    		$flashBag->set('notice', "Vous avez gagné !");
     	}
     	
     	$session->remove('game_started');
@@ -446,8 +450,12 @@ class GameController extends Controller
 	    		$flashBag->get('notice');
 	    		$flashBag->set('notice', "Vous avez perdu !");
 	    	}
+    	}else{
+	    	$flashBag = $this->get('session')->getFlashBag();
+	    	$flashBag->get('notice');
+	    	$flashBag->set('notice', "Vous avez perdu !");
     	}
-    	 
+	    
     	$session->remove('game_started');
     	
     	return $this->redirect($this->generateUrl('mg_memory_game_homepage'));    	
