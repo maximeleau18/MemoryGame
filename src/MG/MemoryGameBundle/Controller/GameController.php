@@ -14,6 +14,7 @@ use MG\MemoryGameBundle\Entity\GameEntity\CoupleCards;
 use Symfony\Component\HttpFoundation\Response;
 use MG\MemoryGameBundle\Entity\Result;
 use MG\MemoryGameBundle\Entity\ComputerPlayer;
+use MG\MemoryGameBundle\Entity\RecordsBook;
 
 class GameController extends Controller
 {
@@ -399,18 +400,7 @@ class GameController extends Controller
 	    	}
 	    	
 	    	$game = $session->get('game');
-	    	if ($game){
-	    		/**
-	    		 * $difficulty = $this->manager->getRepository('MGMemoryGameBundle:Difficulty')->find($game->getDifficulty()->getId());
-	    		$game->setDifficulty($difficulty);
-	    		 
-	    		$mode = $this->manager->getRepository('MGMemoryGameBundle:Mode')->find($game->getMode()->getId());
-	    		$game->setMode($mode);
-	    		 
-	    		$this->manager->persist($game);
-	    		$this->manager->flush();
-	    		**/
-	    		
+	    	if ($game){	    		
 	    		$game = $this->manager->getRepository('MGMemoryGameBundle:Game')->find($game->getId());
 	    		
 	    		$result = New Result();
@@ -419,7 +409,7 @@ class GameController extends Controller
 	    		$result->setPlayer($user);
 	    		$result->setIsWinner(true);
 	    		$result->setRank(1);
-	    		$result->setTime($timer);
+	    		$result->setTime($game->getDifficulty()->getTimer() - $timer);
 	    		
 	    		$this->manager->persist($result);
 	    		$this->manager->flush();   
@@ -435,6 +425,8 @@ class GameController extends Controller
 	    		$this->manager->persist($result);
 	    		$this->manager->flush();    		
 	    		
+	    		$this->insertRecordsBook($user, $game->getMode(), $game->getDifficulty(), $timer);
+	    		
 	    		$flashBag = $this->get('session')->getFlashBag();
 	    		$flashBag->get('notice');
 	    		$flashBag->set('notice', "Vous avez gagné ! Votre score est bien enregistré.");
@@ -446,8 +438,6 @@ class GameController extends Controller
     	}
     	
     	$session->remove('game_started');
-    	 
-    	//return $this->redirect($this->generateUrl('mg_memory_game_homepage'));
     }
     
     public function saveLooserResult()
@@ -467,16 +457,6 @@ class GameController extends Controller
 	    		    	 
 	    	$game = $session->get('game');
 	    	if ($game){
-	    		/**
-	    		$difficulty = $this->manager->getRepository('MGMemoryGameBundle:Difficulty')->find($game->getDifficulty()->getId());
-	    		$game->setDifficulty($difficulty);
-	    		
-	    		$mode = $this->manager->getRepository('MGMemoryGameBundle:Mode')->find($game->getMode()->getId());
-	    		$game->setMode($mode);
-	    		
-	    		$this->manager->persist($game);
-	    		$this->manager->flush();
-	    		**/
 	    		$game = $this->manager->getRepository('MGMemoryGameBundle:Game')->find($game->getId());
 	    		
 	    		$result = New Result();
@@ -511,9 +491,19 @@ class GameController extends Controller
 	    	$flashBag->set('notice', "Vous avez perdu !");
     	}
 	    
-    	$session->remove('game_started');
+    	$session->remove('game_started'); 	
+    }
+    
+    private function insertRecordsBook($user, $mode, $difficulty, $timer){
+    	$recordsBook = New RecordsBook();
+    	$recordsBook->setPlayer($user);
+    	$recordsBook->setMode($mode);
+    	$recordsBook->setDifficulty($difficulty);
+    	$recordsBook->setTime($difficulty->getTimer() - $timer);
+    	$recordsBook->setInsertedAt(New \DateTime());
     	
-    	//return $this->redirect($this->generateUrl('mg_memory_game_homepage'));    	
+    	$this->manager->persist($recordsBook);
+    	$this->manager->flush();
     }
     
     private function getCardById($tabCards, $cardId)

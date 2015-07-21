@@ -42,7 +42,11 @@
 					    	<tr class="third">
 					    {% endif %}
 					            <td>{{ entity.game.playedAt|date('d-m-Y H:i:s') }}</td>
-					            <td>{{ entity.time }}</td>
+					            {% if entity.isWinner == 1 %}					            
+					            	<td>{{ entity.time }} secondes</td>
+					            {% else %}
+					            	<td>{{ entity.time }}</td>
+					            {% endif %}	
 					            <td>
 					            {% if entity.isWinner == 1 %}		
 					            	Oui
