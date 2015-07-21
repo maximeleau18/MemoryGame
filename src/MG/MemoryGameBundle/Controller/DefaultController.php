@@ -30,6 +30,11 @@ class DefaultController extends Controller
     public function indexAction()
     {        	
     	$this->loadData();
+
+    	$request = $this->getRequest();
+    	$session = $request->getSession();
+    	$session->remove('go_to_homepage');
+    	
     	return $this->render('MGMemoryGameBundle:Default:index.html.twig', array(
     			'modes'      => $this->modes,
     			'difficulties' => $this->difficulties,
